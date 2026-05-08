@@ -42,7 +42,7 @@ in a Sev1 you are *responding*, not *triaging*. Use
 
 | Severity | Definition | Response |
 | --- | --- | --- |
-| **Sev1** | Customer-facing outage or data loss; SLO red; affects ≥ 5% of tenants OR a top-tier tenant. | Page on-call immediately. See [`incident-sev1`](../incident-sev1/SKILL.md). |
+| **Sev1** | Customer-facing outage or data loss; SLO red; affects ≥ 5% of tenants OR a **top-tier tenant**¹. | Page on-call immediately. See [`incident-sev1`](../incident-sev1/SKILL.md). |
 | **Sev2** | Major feature broken; workaround exists; affects < 5% of tenants. SLO yellow. | Same-day fix; canary today. |
 | **Sev3** | Minor feature broken or cosmetic; degrades UX; safe to bundle in next train. | Next train (≤ 1 week). |
 | **Sev4** | Nuisance, paper-cut, dev-only, or "as designed but confusing." | Backlog with target phase. |
@@ -50,6 +50,13 @@ in a Sev1 you are *responding*, not *triaging*. Use
 If a triage candidate spans two severities (e.g. cosmetic for most
 tenants but data-loss for a long-tail enterprise), pick the **higher**
 and document the rationale.
+
+> ¹ **"Top-tier tenant"** = any tenant on the **Business** or
+> **Enterprise** plan (per [`docs/billing/plans.md`](../../../docs/billing/plans.md)),
+> *or* any tenant explicitly flagged `priority = true` in the
+> internal ops console (used for design partners, regulated
+> deployments, and contractually committed accounts). When in
+> doubt, treat as top-tier.
 
 ---
 

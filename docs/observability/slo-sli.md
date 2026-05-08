@@ -196,8 +196,16 @@ Budget consumption dashboard: `/d/error-budget` (planned).
 
 1. Open a story per [`docs/stories/`](../stories/).
 2. Open a PR to this file with the new row.
-3. Add the alert rule to `infra/grafana/alerts/<surface>.yml`.
-4. Add or update the runbook at `docs/runbooks/<surface>/<slo>.md`.
+3. Add the alert rule to the canonical alerts location for this
+   repo. Until the observability bootstrap PR (Phase 0 W2) lands,
+   that location is **TBD**; once it lands, this section will pin
+   the exact path (proposed: `infra/grafana/alerts/<surface>.yml`,
+   confirmed by ADR-0014). Cross-reference the bootstrap PR in your
+   own PR description so reviewers can sanity-check the path.
+4. Add or update the runbook under `docs/runbooks/<surface>/`
+   (per-surface runbook trees land with the same observability
+   bootstrap PR; until then, file the runbook content inline in the
+   PR and the bootstrap PR will move it to its final home).
 5. Bump the `Last reviewed` date below.
 6. CODEOWNER review (per surface owner) + Platform/SRE.
 

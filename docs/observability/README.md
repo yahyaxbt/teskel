@@ -60,7 +60,7 @@ metrics:
 4. **Saturation** — queue depth, DB pool usage, sandbox slots,
    token budget consumed.
 
-These are the *only* metrics that get woken up for at 3am. Everything
+These are the *only* metrics that page on-call engineers. Everything
 else is dashboard fodder.
 
 ---

@@ -56,7 +56,7 @@ Every mutating handler that does not declare an idempotency key is a
 
 ### 3.1 Header
 
-```
+```http
 Idempotency-Key: 01J9X3K2...        // ULID or UUID v7
 ```
 

@@ -181,8 +181,15 @@ Order of erasure (per [`docs/data/retention.md`](../../../docs/data/retention.md
    metadata.
 4. **Class E (marketing)** — cohort exposures, A/B logs (PostHog
    cohort delete via API).
-5. **Class C (operational)** — logs and traces are not deleted
-   per-tenant; they purge naturally per retention.
+5. **Class C (operational)** — **not deleted per-tenant**. Audit
+   log entries remain until natural retention expiry (plan-tiered:
+   7 d / 30 d / 90 d / 1 y / 7 y per
+   [`docs/data/retention.md`](../../../docs/data/retention.md) §3
+   and [`docs/billing/plans.md`](../../../docs/billing/plans.md)).
+   Logs and traces purge per their own Loki / OTel retention. The
+   pre-erasure audit-log snapshot from Step 2 satisfies regulator
+   "what was deleted, when" questions; live audit-log queries
+   afterward go via [`audit-log-query`](../audit-log-query/SKILL.md).
 6. **Class D (financial)** — **NOT deleted**; pseudonymized for
    the affected subject, retained per legal floor.
 

@@ -33,7 +33,7 @@ when it lands.
 Default cadence: **two scheduled releases per week** (Tue + Thu),
 plus on-demand hotfixes (per `release-hotfix` skill).
 
-```
+```text
 Mon                 Tue                 Wed                 Thu                 Fri
 ─────────────────────────────────────────────────────────────────────────────────
                 cut & deploy                          cut & deploy
