@@ -40,13 +40,36 @@ agent-specific shim files (`CLAUDE.md`, `.cursorrules`,
 `.github/copilot-instructions.md`) all point back to `AGENTS.md`.
 
 For recurring tasks, follow the matching skill in
-[`.agents/skills/`](./.agents/skills/) — there's a skill for adding a
-package, table, API route, page, UI component, builder block, prompt
-slot, workflow node, feature flag, RBAC permission, e2e test,
-runbook, marketplace template, secret rotation, data backfill,
-canary release, Sev1 incident, and phase kickoff. See the [skills
-library index](./AGENTS.md#19-skills-library) for the full lookup
-table.
+[`.agents/skills/`](./.agents/skills/) — 31 skills cover scaffolding
+the monorepo, adding a package / table / API route / webhook / cron /
+email / integration / page / UI component / builder block / prompt
+slot / workflow node / feature flag / RBAC permission / e2e test /
+runbook, publishing a marketplace template, rotating secrets, running
+data backfills, restoring the DB, releasing a canary or hotfix,
+responding to Sev1 / Sev2 incidents, processing GDPR requests,
+running GameDay drills, and authoring ADRs / RFCs / phase kickoffs.
+See the [skills library index](./AGENTS.md#19-skills-library) for the
+full lookup table.
+
+### Where everything lives (quick map)
+
+| Need | Path |
+| --- | --- |
+| Master plan | [`TESKEL_FULLSTACK_BUILD_BREAKDOWN.md`](./TESKEL_FULLSTACK_BUILD_BREAKDOWN.md) |
+| Operating manual | [`AGENTS.md`](./AGENTS.md) |
+| Current phase scope | [`.agents/state/current-phase.md`](./.agents/state/current-phase.md) |
+| Skills | [`.agents/skills/`](./.agents/skills/) |
+| Agent navigation | [`.agents/README.md`](./.agents/README.md) |
+| Glossary | [`.agents/glossary.md`](./.agents/glossary.md) |
+| Architecture decisions | [`docs/adr/`](./docs/adr/) |
+| Design proposals | [`docs/rfc/`](./docs/rfc/) |
+| Phase briefs | [`docs/phases/`](./docs/phases/) |
+| Stories (work units) | [`docs/stories/`](./docs/stories/) |
+| Runbooks (alerts) | [`docs/runbooks/`](./docs/runbooks/) |
+| Secrets registry | [`docs/security/secrets.md`](./docs/security/secrets.md) |
+| RBAC matrix | [`docs/security/rbac-matrix.md`](./docs/security/rbac-matrix.md) |
+| Contribution guide | [`CONTRIBUTING.md`](./CONTRIBUTING.md) |
+| Security policy | [`SECURITY.md`](./SECURITY.md) |
 
 ---
 

@@ -637,6 +637,10 @@ the PR description.
 
 ### Scaffolding & repo structure
 
+- [`bootstrap-monorepo`](./.agents/skills/bootstrap-monorepo/SKILL.md) —
+  scaffold the **empty** TESKEL monorepo (pnpm + Turborepo + tsconfig
+  + lint/format + Docker + GH Actions + Husky). Run **once** as the
+  first PR of Phase 0; subsequent packages use `add-package`.
 - [`add-package`](./.agents/skills/add-package/SKILL.md) — scaffold a
   new internal `packages/*` package.
 
@@ -646,11 +650,20 @@ the PR description.
   table with RLS policies and migration.
 - [`data-backfill-job`](./.agents/skills/data-backfill-job/SKILL.md) —
   write a safe, batched, idempotent one-off backfill via BullMQ.
+- [`db-restore-pitr`](./.agents/skills/db-restore-pitr/SKILL.md) —
+  point-in-time recovery via WAL-G (shadow cluster + targeted re-
+  import; in-place reserved for total-loss).
 
 ### API & backend
 
 - [`add-api-route`](./.agents/skills/add-api-route/SKILL.md) — Hono
   route with Zod, auth + RBAC, idempotency, OpenAPI, telemetry.
+- [`add-webhook-receiver`](./.agents/skills/add-webhook-receiver/SKILL.md)
+  — inbound webhook with signature verify, dedup, audit trail, async
+  worker, DLQ + replay.
+- [`add-cron-job`](./.agents/skills/add-cron-job/SKILL.md) — scheduled
+  job (BullMQ Repeatable / Inngest cron) with jitter, idempotency,
+  kill-switch, DST safety.
 
 ### Workflow runtime
 
@@ -676,6 +689,15 @@ the PR description.
 - [`design-review`](./.agents/skills/design-review/SKILL.md) — UI/UX
   self-review checklist (run before any UI PR).
 
+### Integrations & messaging
+
+- [`add-integration`](./.agents/skills/add-integration/SKILL.md) —
+  third-party integration (typed client, retry, circuit breaker,
+  kill-switch, observability, subprocessor doc).
+- [`add-email-template`](./.agents/skills/add-email-template/SKILL.md)
+  — Resend transactional email (typed payload, react-email source,
+  plaintext fallback, locale, unsubscribe headers, render tests).
+
 ### Marketplace
 
 - [`publish-template`](./.agents/skills/publish-template/SKILL.md) —
@@ -687,6 +709,9 @@ the PR description.
   the permission registry, role map, RLS policies, audit log.
 - [`rotate-secret`](./.agents/skills/rotate-secret/SKILL.md) — rotate
   any secret with zero downtime (dual-window).
+- [`gdpr-data-request`](./.agents/skills/gdpr-data-request/SKILL.md) —
+  process a DSAR (access / portability / erasure / rectification)
+  end-to-end with audit + verification.
 
 ### Operations & release
 
@@ -695,10 +720,16 @@ the PR description.
   removal SLA.
 - [`release-canary`](./.agents/skills/release-canary/SKILL.md) —
   promote a canary deploy to 100%.
+- [`release-hotfix`](./.agents/skills/release-hotfix/SKILL.md) —
+  emergency production fix outside the normal train.
 - [`add-runbook`](./.agents/skills/add-runbook/SKILL.md) — author a
   Grafana/Better Stack runbook attached to an alert.
 - [`incident-sev1`](./.agents/skills/incident-sev1/SKILL.md) — Sev1
   incident response runbook.
+- [`incident-sev2`](./.agents/skills/incident-sev2/SKILL.md) — Sev2
+  partial-impact incident response.
+- [`gameday-drill`](./.agents/skills/gameday-drill/SKILL.md) —
+  controlled chaos / DR drill (quarterly minimum).
 
 ### Quality
 
@@ -707,6 +738,10 @@ the PR description.
 
 ### Process
 
+- [`write-adr`](./.agents/skills/write-adr/SKILL.md) — author an
+  Architecture Decision Record (immutable, supersede-only).
+- [`write-rfc`](./.agents/skills/write-rfc/SKILL.md) — author a
+  Request for Comments (exploratory; converges on an ADR).
 - [`kickoff-phase`](./.agents/skills/kickoff-phase/SKILL.md) — formal
   procedure to start a new build phase.
 
@@ -714,23 +749,35 @@ the PR description.
 
 | Task | Skill |
 | --- | --- |
+| Open the very first Phase 0 PR | [`bootstrap-monorepo`](./.agents/skills/bootstrap-monorepo/SKILL.md) |
 | Add a new component used in 2+ places | [`add-ui-component`](./.agents/skills/add-ui-component/SKILL.md) |
 | Add a new authenticated page | [`add-page`](./.agents/skills/add-page/SKILL.md) |
 | Review a UI diff before opening a PR | [`design-review`](./.agents/skills/design-review/SKILL.md) |
 | Add a builder block (Puck) | [`add-block`](./.agents/skills/add-block/SKILL.md) |
 | Add a `POST /v1/...` endpoint | [`add-api-route`](./.agents/skills/add-api-route/SKILL.md) |
+| Receive a vendor's inbound webhook | [`add-webhook-receiver`](./.agents/skills/add-webhook-receiver/SKILL.md) |
+| Schedule a cron / repeating job | [`add-cron-job`](./.agents/skills/add-cron-job/SKILL.md) |
+| Bring in a new vendor SDK | [`add-integration`](./.agents/skills/add-integration/SKILL.md) |
+| Send a transactional email | [`add-email-template`](./.agents/skills/add-email-template/SKILL.md) |
 | Add a Drizzle table | [`add-table`](./.agents/skills/add-table/SKILL.md) |
 | Backfill 1M+ rows with computed values | [`data-backfill-job`](./.agents/skills/data-backfill-job/SKILL.md) |
+| Restore the DB to an earlier point in time | [`db-restore-pitr`](./.agents/skills/db-restore-pitr/SKILL.md) |
 | Add a workflow node (LLM step, http step, …) | [`add-workflow-node`](./.agents/skills/add-workflow-node/SKILL.md) |
 | Introduce a new LLM call | [`add-prompt-slot`](./.agents/skills/add-prompt-slot/SKILL.md) |
 | Ship behind a flag / A/B | [`add-feature-flag`](./.agents/skills/add-feature-flag/SKILL.md) |
 | Promote canary → 100% | [`release-canary`](./.agents/skills/release-canary/SKILL.md) |
+| Ship an emergency production fix | [`release-hotfix`](./.agents/skills/release-hotfix/SKILL.md) |
 | Add an alert | author the alert + [`add-runbook`](./.agents/skills/add-runbook/SKILL.md) |
 | Sev1 happens | [`incident-sev1`](./.agents/skills/incident-sev1/SKILL.md) |
+| Sev2 (partial impact) happens | [`incident-sev2`](./.agents/skills/incident-sev2/SKILL.md) |
+| Plan a chaos / DR drill | [`gameday-drill`](./.agents/skills/gameday-drill/SKILL.md) |
 | Add or change a permission | [`add-rbac-role`](./.agents/skills/add-rbac-role/SKILL.md) |
 | Rotate a secret | [`rotate-secret`](./.agents/skills/rotate-secret/SKILL.md) |
+| Process a GDPR / privacy request | [`gdpr-data-request`](./.agents/skills/gdpr-data-request/SKILL.md) |
 | Publish / accept a marketplace template | [`publish-template`](./.agents/skills/publish-template/SKILL.md) |
 | Add a Playwright E2E flow | [`add-e2e-test`](./.agents/skills/add-e2e-test/SKILL.md) |
+| Settle an architecture decision | [`write-adr`](./.agents/skills/write-adr/SKILL.md) |
+| Propose a non-trivial design before coding | [`write-rfc`](./.agents/skills/write-rfc/SKILL.md) |
 | Start a new phase | [`kickoff-phase`](./.agents/skills/kickoff-phase/SKILL.md) |
 
 For **Devin**: invoke via the `skill` tool. For other agents: read the
@@ -788,7 +835,19 @@ Always link the corresponding plan section / ADR when adding or
 changing a rule.
 
 ```text
-Version: 1.0.0
+Version: 1.1.0
 Last reviewed: 2026-05-08
 Owners: see CODEOWNERS (root)
 ```
+
+### Changelog
+
+- **1.1.0** — Skills library expanded from 19 → 31 (added bootstrap-
+  monorepo, add-integration, add-webhook-receiver, add-cron-job,
+  add-email-template, write-adr, write-rfc, release-hotfix,
+  incident-sev2, gameday-drill, gdpr-data-request, db-restore-pitr).
+  Quick-lookup table reorganized; Integrations & Process categories
+  added. Plan §Changelog v2.4.
+- **1.0.0** — Initial AGENTS.md (plan v2.2). 21 sections covering
+  identity, hierarchy, repo map, stack, conventions, hard rules,
+  workflow, escalation, skills index.
