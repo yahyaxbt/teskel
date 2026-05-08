@@ -39,6 +39,15 @@ Copilot / Aider): read [`AGENTS.md`](./AGENTS.md) first. The relevant
 agent-specific shim files (`CLAUDE.md`, `.cursorrules`,
 `.github/copilot-instructions.md`) all point back to `AGENTS.md`.
 
+For recurring tasks, follow the matching skill in
+[`.agents/skills/`](./.agents/skills/) — there's a skill for adding a
+package, table, API route, page, UI component, builder block, prompt
+slot, workflow node, feature flag, RBAC permission, e2e test,
+runbook, marketplace template, secret rotation, data backfill,
+canary release, Sev1 incident, and phase kickoff. See the [skills
+library index](./AGENTS.md#19-skills-library) for the full lookup
+table.
+
 ---
 
 ## What's in this repo

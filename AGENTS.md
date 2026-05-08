@@ -631,18 +631,107 @@ Reusable agent procedures live in `.agents/skills/<name>/SKILL.md`. Each
 skill is a checklist for a recurring operation. **Use them.** Don't
 reinvent the wheel.
 
-Currently available skills:
+Decision flow: figure out what you're doing → find the matching skill
+→ follow the steps verbatim → only deviate with a written reason in
+the PR description.
+
+### Scaffolding & repo structure
 
 - [`add-package`](./.agents/skills/add-package/SKILL.md) — scaffold a
   new internal `packages/*` package.
+
+### Database & data
+
 - [`add-table`](./.agents/skills/add-table/SKILL.md) — add a Drizzle
   table with RLS policies and migration.
+- [`data-backfill-job`](./.agents/skills/data-backfill-job/SKILL.md) —
+  write a safe, batched, idempotent one-off backfill via BullMQ.
+
+### API & backend
+
+- [`add-api-route`](./.agents/skills/add-api-route/SKILL.md) — Hono
+  route with Zod, auth + RBAC, idempotency, OpenAPI, telemetry.
+
+### Workflow runtime
+
 - [`add-workflow-node`](./.agents/skills/add-workflow-node/SKILL.md) —
   register a new workflow node type end-to-end.
-- [`release-canary`](./.agents/skills/release-canary/SKILL.md) — promote
-  a canary deploy to 100%.
+
+### AI / LLM
+
+- [`add-prompt-slot`](./.agents/skills/add-prompt-slot/SKILL.md) —
+  register a versioned prompt slot with eval, budgets, fallbacks,
+  Langfuse tracing.
+
+### UI / UX
+
+- [`add-ui-component`](./.agents/skills/add-ui-component/SKILL.md) —
+  scaffold a shadcn/ui-style component (tokens, variants, states,
+  a11y, Storybook, tests).
+- [`add-page`](./.agents/skills/add-page/SKILL.md) — Next.js 15 App
+  Router page with Server Component default, RLS, four state files,
+  Playwright smoke.
+- [`add-block`](./.agents/skills/add-block/SKILL.md) — Puck visual
+  builder block (schema, render, palette, migrator, tests).
+- [`design-review`](./.agents/skills/design-review/SKILL.md) — UI/UX
+  self-review checklist (run before any UI PR).
+
+### Marketplace
+
+- [`publish-template`](./.agents/skills/publish-template/SKILL.md) —
+  end-to-end publishing flow for a marketplace template.
+
+### Security & access
+
+- [`add-rbac-role`](./.agents/skills/add-rbac-role/SKILL.md) — modify
+  the permission registry, role map, RLS policies, audit log.
+- [`rotate-secret`](./.agents/skills/rotate-secret/SKILL.md) — rotate
+  any secret with zero downtime (dual-window).
+
+### Operations & release
+
+- [`add-feature-flag`](./.agents/skills/add-feature-flag/SKILL.md) —
+  PostHog flag with typed wrapper, rollout plan, kill criteria,
+  removal SLA.
+- [`release-canary`](./.agents/skills/release-canary/SKILL.md) —
+  promote a canary deploy to 100%.
+- [`add-runbook`](./.agents/skills/add-runbook/SKILL.md) — author a
+  Grafana/Better Stack runbook attached to an alert.
 - [`incident-sev1`](./.agents/skills/incident-sev1/SKILL.md) — Sev1
   incident response runbook.
+
+### Quality
+
+- [`add-e2e-test`](./.agents/skills/add-e2e-test/SKILL.md) —
+  Playwright test for a golden user flow.
+
+### Process
+
+- [`kickoff-phase`](./.agents/skills/kickoff-phase/SKILL.md) — formal
+  procedure to start a new build phase.
+
+### Quick lookup table — "I'm about to..." → skill
+
+| Task | Skill |
+| --- | --- |
+| Add a new component used in 2+ places | [`add-ui-component`](./.agents/skills/add-ui-component/SKILL.md) |
+| Add a new authenticated page | [`add-page`](./.agents/skills/add-page/SKILL.md) |
+| Review a UI diff before opening a PR | [`design-review`](./.agents/skills/design-review/SKILL.md) |
+| Add a builder block (Puck) | [`add-block`](./.agents/skills/add-block/SKILL.md) |
+| Add a `POST /v1/...` endpoint | [`add-api-route`](./.agents/skills/add-api-route/SKILL.md) |
+| Add a Drizzle table | [`add-table`](./.agents/skills/add-table/SKILL.md) |
+| Backfill 1M+ rows with computed values | [`data-backfill-job`](./.agents/skills/data-backfill-job/SKILL.md) |
+| Add a workflow node (LLM step, http step, …) | [`add-workflow-node`](./.agents/skills/add-workflow-node/SKILL.md) |
+| Introduce a new LLM call | [`add-prompt-slot`](./.agents/skills/add-prompt-slot/SKILL.md) |
+| Ship behind a flag / A/B | [`add-feature-flag`](./.agents/skills/add-feature-flag/SKILL.md) |
+| Promote canary → 100% | [`release-canary`](./.agents/skills/release-canary/SKILL.md) |
+| Add an alert | author the alert + [`add-runbook`](./.agents/skills/add-runbook/SKILL.md) |
+| Sev1 happens | [`incident-sev1`](./.agents/skills/incident-sev1/SKILL.md) |
+| Add or change a permission | [`add-rbac-role`](./.agents/skills/add-rbac-role/SKILL.md) |
+| Rotate a secret | [`rotate-secret`](./.agents/skills/rotate-secret/SKILL.md) |
+| Publish / accept a marketplace template | [`publish-template`](./.agents/skills/publish-template/SKILL.md) |
+| Add a Playwright E2E flow | [`add-e2e-test`](./.agents/skills/add-e2e-test/SKILL.md) |
+| Start a new phase | [`kickoff-phase`](./.agents/skills/kickoff-phase/SKILL.md) |
 
 For **Devin**: invoke via the `skill` tool. For other agents: read the
 `SKILL.md` and follow the steps.
