@@ -1,0 +1,66 @@
+# CODEOWNERS — TESKEL
+#
+# Each line matches files via gitignore-style patterns; the last
+# matching pattern wins. Owners are auto-requested for review.
+#
+# Source of truth for the owner list: `.agents/state/owners.md`.
+# Update both files in the same PR if you change ownership.
+#
+# Reference: AGENTS.md §13 (PR workflow), §17 (escalation).
+
+# Default — everything not matched below
+*                                @yahyaxbt
+
+# Plan, ADR, RFC, runbooks, docs
+/TESKEL_FULLSTACK_BUILD_BREAKDOWN.md   @yahyaxbt
+/AGENTS.md                              @yahyaxbt
+/CLAUDE.md                              @yahyaxbt
+/.cursorrules                           @yahyaxbt
+/.github/copilot-instructions.md        @yahyaxbt
+/README.md                              @yahyaxbt
+/docs/                                  @yahyaxbt
+/docs/adr/                              @yahyaxbt
+/docs/rfc/                              @yahyaxbt
+/docs/runbooks/                         @yahyaxbt
+/.agents/                               @yahyaxbt
+
+# Auth — extra-careful reviews
+/packages/auth/                         @yahyaxbt
+
+# Database / migrations / RLS
+/packages/db/                           @yahyaxbt
+**/*.sql                                @yahyaxbt
+
+# Billing / Stripe
+/packages/billing/                      @yahyaxbt
+
+# AI / LLM gateway / prompts
+/packages/ai/                           @yahyaxbt
+
+# Workflow runtime + queues
+/packages/runner/                       @yahyaxbt
+/packages/queue/                        @yahyaxbt
+
+# UI / design system
+/packages/ui/                           @yahyaxbt
+/apps/web/                              @yahyaxbt
+
+# Public APIs
+/packages/sdk/                          @yahyaxbt
+/packages/cli/                          @yahyaxbt
+/apps/api/                              @yahyaxbt
+
+# Infra / deploy / CI
+/infra/                                 @yahyaxbt
+/.github/workflows/                     @yahyaxbt
+/Dockerfile                             @yahyaxbt
+**/Dockerfile                           @yahyaxbt
+
+# Security / compliance / licensing
+/SECURITY.md                            @yahyaxbt
+/LICENSE                                @yahyaxbt
+/CODE_OF_CONDUCT.md                     @yahyaxbt
+
+# Templates (marketplace seeds)
+/seeds/templates/                       @yahyaxbt
+/packages/template-engine/              @yahyaxbt
