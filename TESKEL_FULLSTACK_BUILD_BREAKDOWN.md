@@ -126,7 +126,7 @@ Clean • Modern • Global-Class • AI-Native • Production-Ready
   - [97. Common Pitfalls Per Phase](#97-common-pitfalls-per-phase--mitigation)
   - [98. Local Dev → Prod Promotion Checklist](#98-local-dev--prod-promotion-checklist-per-story)
   - [99. Senior-Eng Decision Cheatsheet](#99-senior-eng-decision-cheatsheet-quick-reference)
-- [Changelog v1 → v2 → v2.1](#changelog-v1--v2)
+- [Changelog v1 → v2 → v2.1 → v2.2 → v2.3 → v2.4 → v2.5 (FINAL)](#changelog-v1--v2--v21--v22--v23--v24--v25-final)
 
 ---
 
