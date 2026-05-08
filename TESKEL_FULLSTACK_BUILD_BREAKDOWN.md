@@ -5041,7 +5041,48 @@ Daftar keputusan paling sering ditanya, supaya tim baru tidak debat:
 
 ---
 
-## Changelog v1 → v2 → v2.1
+## Changelog v1 → v2 → v2.1 → v2.2 (FINAL)
+
+### v2.2 (Final — AI Agent Operating Manual + Repo Scaffolding)
+
+> Status: **FINAL**. Plan ini dianggap *executable single source of
+> truth*. Perubahan selanjutnya melalui jalur ADR/RFC (lihat Sec. 71 +
+> Appendix G).
+
+- Tambah berkas operasional di repo root yang melengkapi plan ini supaya
+  AI coding agent (Devin, Cursor, Claude Code, Copilot, Aider) bisa
+  langsung eksekusi tanpa kebingungan:
+  - [`AGENTS.md`](./AGENTS.md) — operating manual (21 bab): ringkasan
+    cepat, identitas project, hierarki dokumen, repo map target, stack
+    yang sudah diputuskan, command lokal, konvensi koding, hard
+    constraint arsitektur, aturan keamanan/data, aturan AI/LLM, mirror
+    Sec. 99, phase awareness, PR workflow, DoR/DoD, RFC→ADR flow,
+    forbidden actions, escalation triggers, indeks lokasi, library
+    skill, catatan per-agent, versioning.
+  - [`CLAUDE.md`](./CLAUDE.md), [`.cursorrules`](./.cursorrules),
+    [`.github/copilot-instructions.md`](./.github/copilot-instructions.md)
+    — pointer file per agent, redirect ke `AGENTS.md`.
+  - [`README.md`](./README.md) — public-facing intro (status,
+    roadmap, stack at a glance, quick commands).
+  - [`.agents/state/current-phase.md`](./.agents/state/current-phase.md)
+    — state machine‑readable untuk membatasi scope agent ke fase aktif
+    (default: Phase 0).
+  - [`.agents/state/owners.md`](./.agents/state/owners.md) +
+    [`.github/CODEOWNERS`](./.github/CODEOWNERS) — sumber tunggal
+    routing review.
+  - 5 SKILL.md di [`.agents/skills/`](./.agents/skills/):
+    `add-package`, `add-table` (RLS-aware), `add-workflow-node`
+    (full-stack), `release-canary`, `incident-sev1` — checklist agent
+    untuk operasi berulang.
+  - [`docs/adr/0000-template.md`](./docs/adr/0000-template.md) +
+    [`docs/rfc/0000-template.md`](./docs/rfc/0000-template.md) —
+    template formal untuk perubahan keputusan.
+  - [`.github/pull_request_template.md`](./.github/pull_request_template.md)
+    — template PR yang menegakkan DoD + architecture compliance check.
+- Tegaskan jalur amandemen: untuk mengubah keputusan yang
+  terdokumentasi di plan ini, agent/engineer **wajib** menulis RFC
+  → promote ke ADR → update plan dalam PR yang sama. Plan ini
+  *immutable kecuali via ADR* (lihat AGENTS.md §15).
 
 ### v2.1 (Phase X — Senior Fullstack Build Walkthrough)
 

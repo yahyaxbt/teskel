@@ -1,0 +1,46 @@
+# .cursorrules — Cursor agent rules for TESKEL
+
+The canonical agent instructions live in `AGENTS.md` at the repo root.
+Cursor: load and follow `AGENTS.md` for every interaction in this
+workspace.
+
+Read these files in order before any change:
+
+1. `AGENTS.md` — operating manual.
+2. `TESKEL_FULLSTACK_BUILD_BREAKDOWN.md` — master plan.
+3. `.agents/state/current-phase.md` — current phase / allowed scope.
+4. The relevant `.agents/skills/<name>/SKILL.md` if your task matches one.
+
+Hard rules (mirror of `AGENTS.md` §8):
+
+- Tenant isolation via Postgres RLS — every tenant query goes through
+  `db.withTenant(orgId)`. Bypassing requires `// RLS-EXEMPT: <reason>`
+  plus reviewer ack.
+- API boundary types via Zod — no `any`-typed handlers.
+- Default to Next.js Server Components; push `'use client'` to leaves.
+- Side effects via outbox + BullMQ worker, never inside a request
+  handler.
+- Idempotency by default on every mutating endpoint.
+- Prompts in registry (`@teskel/ai`'s `getPrompt(slot)`) — no inline
+  prompt strings.
+- Migrations reversible (or documented backfill in PR).
+- All `process.env.*` access through `packages/shared/config.ts` only.
+- No data destruction without `softDelete` + audit log.
+- Single-writer DB; cross-service consistency via outbox events.
+
+Forbidden without explicit human approval (mirror of `AGENTS.md` §16):
+
+- Force push to `main` / `release/*`, `--no-verify`, prod env edits,
+  destructive SQL, disabling RLS, deps >100KB without ADR, Stripe live
+  key changes, public registry pushes, modifying LICENSE / SECURITY,
+  disabling CI checks, approving own PR.
+
+Stack defaults (mirror of `AGENTS.md` §5):
+
+Next.js 15 + React 19 + Tailwind + shadcn/ui (Server Components first),
+Hono, Drizzle, Postgres + pgvector, Better Auth, BullMQ (Inngest
+secondary), Puck (Craft.js fallback), E2B (Daytona/Modal P1),
+Liveblocks + Yjs, OpenRouter + Langfuse, Cloudflare R2, Resend, Stripe
+Billing + Connect, Coolify, Loki + Grafana, Sentry, PostHog.
+
+When this file and `AGENTS.md` disagree, `AGENTS.md` wins.
