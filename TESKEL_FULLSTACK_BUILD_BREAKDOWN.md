@@ -5041,7 +5041,102 @@ Daftar keputusan paling sering ditanya, supaya tim baru tidak debat:
 
 ---
 
-## Changelog v1 → v2 → v2.1 → v2.2 → v2.3 (FINAL)
+## Changelog v1 → v2 → v2.1 → v2.2 → v2.3 → v2.4 (FINAL)
+
+### v2.4 (Final — Skills Library Round 2 + Supporting Docs)
+
+> Status: **FINAL**. Plan tetap *executable single source of truth*.
+> Perubahan terhadap keputusan plan tetap wajib lewat jalur ADR/RFC
+> (Sec. 71 + Appendix G).
+
+- **Skills library diperluas dari 19 → 31** untuk menutup operasi
+  yang masih kosong di repo, sehingga AI coding agent punya checklist
+  end-to-end dari Phase 0 W1 sampai launch + day-2 ops:
+  - **Bootstrap**:
+    [`bootstrap-monorepo`](./.agents/skills/bootstrap-monorepo/SKILL.md)
+    — scaffold monorepo kosong (pnpm + Turborepo + tsconfig + lint /
+    format + Docker base + GitHub Actions + Husky). Dijalankan satu
+    kali sebagai PR pertama Phase 0 W1; setelahnya pakai
+    `add-package`.
+  - **Integrations**:
+    [`add-integration`](./.agents/skills/add-integration/SKILL.md)
+    (vendor SDK terbungkus typed client, retry, circuit breaker,
+    kill-switch, observability, subprocessor doc),
+    [`add-webhook-receiver`](./.agents/skills/add-webhook-receiver/SKILL.md)
+    (verify → persist → enqueue → respond, DLQ + replay),
+    [`add-cron-job`](./.agents/skills/add-cron-job/SKILL.md)
+    (BullMQ Repeatable / Inngest cron, jitter, idempotency, DST
+    safety),
+    [`add-email-template`](./.agents/skills/add-email-template/SKILL.md)
+    (Resend transactional, react-email, plaintext fallback, locale,
+    unsubscribe, render snapshots).
+  - **Process**:
+    [`write-adr`](./.agents/skills/write-adr/SKILL.md) (immutable
+    decision record, supersede-only flow),
+    [`write-rfc`](./.agents/skills/write-rfc/SKILL.md) (eksplorasi
+    yang konvergen ke ADR, drop-dead criteria).
+  - **Operations & release**:
+    [`release-hotfix`](./.agents/skills/release-hotfix/SKILL.md)
+    (emergency fix di luar release train; rollback plan ditulis
+    duluan; canary skip hanya kalau alternatifnya lebih buruk),
+    [`incident-sev2`](./.agents/skills/incident-sev2/SKILL.md)
+    (partial-impact incident; lighter triage tapi tetap
+    post-mortem; recurrence rule),
+    [`gameday-drill`](./.agents/skills/gameday-drill/SKILL.md)
+    (controlled chaos / DR drill, scenario menu 14 macam, quarterly
+    minimum).
+  - **Security & compliance**:
+    [`gdpr-data-request`](./.agents/skills/gdpr-data-request/SKILL.md)
+    (DSAR end-to-end: access / portability / erasure / rectification,
+    identity verification, audit log, SLA tracking, regulatory
+    reporting).
+  - **Disaster recovery**:
+    [`db-restore-pitr`](./.agents/skills/db-restore-pitr/SKILL.md)
+    (Postgres PITR via WAL-G, default *side-by-side shadow* dengan
+    targeted re-import; in-place hanya untuk total-loss + Sev1
+    commander approval).
+- **Dokumentasi penopang baru** supaya skill-skill di atas punya
+  tempat untuk ditulis:
+  - [`docs/runbooks/README.md`](./docs/runbooks/README.md) — index
+    runbook per service (api / workers / db / ai / integrations /
+    cron / infra / security), referensi `add-runbook`.
+  - [`docs/security/secrets.md`](./docs/security/secrets.md) —
+    secrets registry, rotation cadence, compromise procedure;
+    referensi `rotate-secret`.
+  - [`docs/security/rbac-matrix.md`](./docs/security/rbac-matrix.md)
+    — sumber tunggal `permissions × roles × surfaces`, system roles
+    + tenant roles, enforcement layers; referensi `add-rbac-role`.
+  - [`docs/phases/README.md`](./docs/phases/README.md) — phase
+    navigation 7 fase, brief template, lifecycle, retro setiap akhir
+    fase; referensi `kickoff-phase`.
+  - [`docs/adr/README.md`](./docs/adr/README.md) — ADR index,
+    konvensi penomoran, status flow, expected first wave
+    (ADR-0001..0010); referensi `write-adr` + plan §71.
+  - [`docs/rfc/README.md`](./docs/rfc/README.md) — RFC index, decision
+    table "RFC vs ADR vs PR", lifecycle, time-box 30 hari;
+    referensi `write-rfc`.
+  - [`docs/stories/README.md`](./docs/stories/README.md) +
+    [`docs/stories/0000-template.md`](./docs/stories/0000-template.md)
+    — story-driven work tracker (`P<phase>-<NNN>-<slug>`), satu
+    story = satu outcome, story bertahan lebih lama dari PR.
+  - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — kontribusi guideline
+    untuk humans + AI agents (DoR/DoD, branch + commit, plan-first
+    rule, RFC→ADR jalur).
+  - [`SECURITY.md`](./SECURITY.md) — security policy + reporting
+    channel.
+  - [`.agents/README.md`](./.agents/README.md) — navigation untuk
+    direktori `.agents/`.
+  - [`.agents/glossary.md`](./.agents/glossary.md) — terminology
+    glossary (workflow node, prompt slot, tenant, story, dst).
+- **Update [`AGENTS.md` §19 (Skills Library)](./AGENTS.md#19-skills-library)**
+  jadi indeks lengkap 31 skill berbasis kategori plus tabel cepat
+  "I'm about to..." → skill yang kini mencakup 30 entry.
+- **Update [`README.md`](./README.md)** untuk menambahkan tabel
+  "Where everything lives" (master plan, AGENTS.md, current-phase,
+  skills, ADR, RFC, phases, stories, runbooks, secrets, RBAC,
+  CONTRIBUTING, SECURITY).
+- Tidak ada perubahan keputusan plan; semua skill + dokumen
+  mencerminkan konvensi yang sudah ada di plan dan di AGENTS.md.
 
 ### v2.3 (Final — Skills Library Expansion)
 
