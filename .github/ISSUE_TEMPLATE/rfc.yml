@@ -1,0 +1,110 @@
+name: RFC tracker
+description: Open an issue to track an RFC (the RFC document itself lives in docs/rfc/).
+title: "[rfc] "
+labels: ["type:rfc", "status:open-for-comments"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue **tracks** an RFC. The actual RFC document lives in
+        [`docs/rfc/`](../../docs/rfc/) — see
+        [`write-rfc` skill](../../.agents/skills/write-rfc/SKILL.md).
+
+        Use this issue to:
+
+        - link the PR that introduces the RFC document,
+        - collect cross-references (related stories, ADRs, prior art),
+        - drive comments to convergence,
+        - record the final resolution.
+
+        > Comments on the **RFC content** belong on the RFC PR, not
+        > here. This issue is a **tracker**.
+  - type: input
+    id: rfc_number
+    attributes:
+      label: RFC number
+      description: "If known. Otherwise leave blank — assigned at PR open."
+      placeholder: "0007"
+  - type: input
+    id: rfc_title
+    attributes:
+      label: RFC title
+      placeholder: "Adopt step.run-style workflow runtime for long-lived agents"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement (one paragraph)
+      description: "Verbatim from the RFC's `## Motivation` section."
+    validations:
+      required: true
+  - type: input
+    id: rfc_pr
+    attributes:
+      label: RFC PR
+      description: "Link to the PR that introduces the document."
+      placeholder: "https://github.com/yahyaxbt/teskel/pull/<N>"
+  - type: input
+    id: ddc
+    attributes:
+      label: Drop-dead criteria / decision deadline
+      description: "When will this RFC close? Hard date, not vibes."
+      placeholder: "2026-06-15"
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Author / driver
+      placeholder: "@yahyaxbt"
+    validations:
+      required: true
+  - type: textarea
+    id: stakeholders
+    attributes:
+      label: Stakeholders / required reviewers
+      description: |
+        Names + areas. The RFC cannot resolve without sign-off from
+        every named stakeholder.
+      placeholder: |
+        - @backend-lead — runtime
+        - @ai-lead — prompt routing
+        - @security-lead — sandbox boundary
+    validations:
+      required: true
+  - type: textarea
+    id: links
+    attributes:
+      label: Related
+      description: |
+        Linked stories, ADRs (esp. anything this RFC might supersede),
+        prior discussion, vendor docs.
+      placeholder: |
+        - Story: P2-014
+        - Possibly supersedes: ADR-0003 (BullMQ default)
+        - Vendor: https://www.inngest.com/docs
+  - type: dropdown
+    id: status
+    attributes:
+      label: Current status
+      options:
+        - "Draft"
+        - "Open for comments"
+        - "Recommended (awaiting ADR)"
+        - "Stalled"
+        - "Withdrawn"
+        - "Rejected"
+        - "Implemented"
+      default: 1
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirm
+      options:
+        - label: "I have read [`write-rfc` skill](../../.agents/skills/write-rfc/SKILL.md) and used the [`docs/rfc/0000-template.md`](../../docs/rfc/0000-template.md) template."
+          required: true
+        - label: "This proposal is **not** a customer support ticket, an architectural fait-accompli, or a bug; it is a question about a substantial direction."
+          required: true

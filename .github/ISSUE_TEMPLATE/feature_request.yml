@@ -1,0 +1,133 @@
+name: Feature request
+description: A new capability, improvement, or change to existing behavior.
+title: "[feature] "
+labels: ["type:feature", "triage:needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a feature.
+
+        > **Substantial change?** (new architecture pattern, new
+        > vendor, new bounded context, change to a hard rule)
+        > Don't file as a feature request. Open an
+        > [RFC](../../docs/rfc/) using the
+        > [`write-rfc` skill](../../.agents/skills/write-rfc/SKILL.md).
+        >
+        > **Phase-scoping concern?** Check
+        > [`.agents/state/current-phase.md`](../../.agents/state/current-phase.md)
+        > first. Out-of-phase work is rejected by default.
+
+        Smaller asks ("expose this field in the API", "add a sort
+        option") are great as feature requests. Larger asks belong
+        in RFCs.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One sentence — what should the system do?
+      placeholder: "Allow workflow nodes to expose a `description` field for tooltips."
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / user value
+      description: |
+        Whose life gets better and how? Quote a real user need if you
+        can. Don't list a solution here — that goes below.
+      placeholder: |
+        Creators frequently ask "what does this node do?" mid-build.
+        Today they have to leave the canvas and read the docs site.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: |
+        What you'd build. Bullet points and a sketch are better than
+        prose. Mark anything you're unsure about with **TBD**.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: "What else could solve this? Why is your proposal better?"
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface(s)
+      multiple: true
+      options:
+        - "Web app"
+        - "Public API"
+        - "Workers / workflow runtime"
+        - "AI gateway / prompts / KB"
+        - "Marketplace"
+        - "Identity / auth / RBAC"
+        - "Sandbox / E2B"
+        - "CLI / SDK"
+        - "Docs / DX"
+        - "Observability"
+        - "Billing"
+        - "Other"
+    validations:
+      required: true
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Suggested phase
+      options:
+        - "Phase 0 — Foundation"
+        - "Phase 1 — Core workflow + AI"
+        - "Phase 2 — Visual builder + sandbox"
+        - "Phase 3 — Marketplace + creator"
+        - "Phase 4 — Enterprise + compliance"
+        - "Phase 5 — AI assist / NL-to-app"
+        - "Phase 6 — Multi-region + self-host"
+        - "I'm not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria (definition of done)
+      description: "How do we know it's shipped? List 2–5 testable bullets."
+      placeholder: |
+        - Workflow node card shows a tooltip with `description` on hover.
+        - `description` is editable in the node config drawer (≤ 280 chars).
+        - API: `node.description` round-trips through `GET/PUT /v1/workflows/:id`.
+        - Storybook story exists.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks / non-goals
+      description: |
+        What might go wrong? What is *deliberately not* part of this
+        feature?
+  - type: checkboxes
+    id: hard_rules
+    attributes:
+      label: Hard-rules check
+      description: "Confirm none of these apply (otherwise it's an RFC, not a feature)."
+      options:
+        - label: "I am NOT proposing to disable RLS, the outbox, idempotency, or any other hard rule from AGENTS.md."
+          required: true
+        - label: "I am NOT proposing a new vendor, language, framework, or bounded context."
+          required: true
+        - label: "This proposal is consistent with the current phase scope."
+          required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirm
+      options:
+        - label: "I have searched existing issues, Discussions, and the master plan ToC."
+          required: true
+        - label: "I have read the relevant skill (if any) before proposing."
+          required: false

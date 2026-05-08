@@ -40,14 +40,16 @@ agent-specific shim files (`CLAUDE.md`, `.cursorrules`,
 `.github/copilot-instructions.md`) all point back to `AGENTS.md`.
 
 For recurring tasks, follow the matching skill in
-[`.agents/skills/`](./.agents/skills/) — 31 skills cover scaffolding
+[`.agents/skills/`](./.agents/skills/) — 37 skills cover scaffolding
 the monorepo, adding a package / table / API route / webhook / cron /
 email / integration / page / UI component / builder block / prompt
 slot / workflow node / feature flag / RBAC permission / e2e test /
 runbook, publishing a marketplace template, rotating secrets, running
 data backfills, restoring the DB, releasing a canary or hotfix,
 responding to Sev1 / Sev2 incidents, processing GDPR requests,
-running GameDay drills, and authoring ADRs / RFCs / phase kickoffs.
+running GameDay drills, authoring ADRs / RFCs / phase kickoffs,
+running LLM eval suites, reviewing PRs, triaging bugs, querying
+the audit log, off-boarding tenants, and writing postmortems.
 See the [skills library index](./AGENTS.md#19-skills-library) for the
 full lookup table.
 
@@ -58,17 +60,28 @@ full lookup table.
 | Master plan | [`TESKEL_FULLSTACK_BUILD_BREAKDOWN.md`](./TESKEL_FULLSTACK_BUILD_BREAKDOWN.md) |
 | Operating manual | [`AGENTS.md`](./AGENTS.md) |
 | Current phase scope | [`.agents/state/current-phase.md`](./.agents/state/current-phase.md) |
-| Skills | [`.agents/skills/`](./.agents/skills/) |
+| Skills (37) | [`.agents/skills/`](./.agents/skills/) |
 | Agent navigation | [`.agents/README.md`](./.agents/README.md) |
 | Glossary | [`.agents/glossary.md`](./.agents/glossary.md) |
-| Architecture decisions | [`docs/adr/`](./docs/adr/) |
-| Design proposals | [`docs/rfc/`](./docs/rfc/) |
+| Architecture (C4, multi-tenancy, threat model) | [`docs/architecture/`](./docs/architecture/) |
+| Architecture decisions (ADR) | [`docs/adr/`](./docs/adr/) |
+| Design proposals (RFC) | [`docs/rfc/`](./docs/rfc/) |
 | Phase briefs | [`docs/phases/`](./docs/phases/) |
 | Stories (work units) | [`docs/stories/`](./docs/stories/) |
 | Runbooks (alerts) | [`docs/runbooks/`](./docs/runbooks/) |
+| Observability (SLO/SLI, dashboards) | [`docs/observability/`](./docs/observability/) |
+| Release process (canary, hotfix) | [`docs/release/`](./docs/release/) |
+| API conventions + idempotency | [`docs/api/`](./docs/api/) |
+| Data retention + classes | [`docs/data/`](./docs/data/) |
+| Marketplace manifest spec | [`docs/marketplace/`](./docs/marketplace/) |
+| Plans + entitlement matrix | [`docs/billing/`](./docs/billing/) |
+| Onboarding (engineer + agent) | [`docs/onboarding/`](./docs/onboarding/) |
+| Legal / privacy / DPA notes | [`docs/legal/`](./docs/legal/) |
 | Secrets registry | [`docs/security/secrets.md`](./docs/security/secrets.md) |
 | RBAC matrix | [`docs/security/rbac-matrix.md`](./docs/security/rbac-matrix.md) |
 | Contribution guide | [`CONTRIBUTING.md`](./CONTRIBUTING.md) |
+| Code of Conduct | [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) |
+| Support paths | [`SUPPORT.md`](./SUPPORT.md) |
 | Security policy | [`SECURITY.md`](./SECURITY.md) |
 
 ---
