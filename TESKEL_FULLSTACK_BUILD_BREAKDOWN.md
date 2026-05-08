@@ -112,7 +112,21 @@ Clean • Modern • Global-Class • AI-Native • Production-Ready
   - [84. Appendix E — Environment Variables](#84-appendix-e--environment-variables)
   - [85. Appendix F — Pre-Launch & Launch Checklist](#85-appendix-f--pre-launch--launch-checklist)
   - [86. Appendix G — RFC / ADR Template](#86-appendix-g--rfc--adr-template)
-- [Changelog v1 → v2](#changelog-v1--v2)
+- **Part X — Build Walkthrough (Senior Fullstack Playbook)**
+  - [87. Pre-Flight Checklist](#87-pre-flight-checklist-sebelum-mulai-coding)
+  - [88. Phase 0 Walkthrough — Foundation](#88-phase-0-walkthrough--foundation-minggu-14)
+  - [89. Phase 1 Walkthrough — Core Workflow + AI](#89-phase-1-walkthrough--core-workflow--ai-minggu-510)
+  - [90. Phase 2 Walkthrough — Visual Builder + Sandbox](#90-phase-2-walkthrough--visual-builder--sandbox-minggu-1116)
+  - [91. Phase 3 Walkthrough — Marketplace + Creator](#91-phase-3-walkthrough--marketplace--creator-economy-minggu-1722)
+  - [92. Phase 4 Walkthrough — Scale, SLA, Enterprise](#92-phase-4-walkthrough--scale-sla-enterprise-minggu-2334)
+  - [93. Phase 5 Walkthrough — AI Native + Verticals](#93-phase-5-walkthrough--ai-native-ux--vertical-templates-minggu-3546)
+  - [94. Phase 6 Walkthrough — Enterprise + Compliance Plus](#94-phase-6-walkthrough--enterprise--compliance-plus-minggu-4760)
+  - [95. Final Cutover & Public Launch Playbook](#95-final-cutover--public-launch-playbook)
+  - [96. Day-2 Operations](#96-day-2-operations-setelah-final--steady-state)
+  - [97. Common Pitfalls Per Phase](#97-common-pitfalls-per-phase--mitigation)
+  - [98. Local Dev → Prod Promotion Checklist](#98-local-dev--prod-promotion-checklist-per-story)
+  - [99. Senior-Eng Decision Cheatsheet](#99-senior-eng-decision-cheatsheet-quick-reference)
+- [Changelog v1 → v2 → v2.1](#changelog-v1--v2)
 
 ---
 
@@ -4080,9 +4094,970 @@ Pilih satu opsi. Jelaskan singkat alasan.
 - ADR terkait.
 ```
 
+# Part X — Build Walkthrough (Senior Fullstack Playbook)
+
+> Bagian ini adalah panduan eksekusi *minggu per minggu* dari Phase 0 ke
+> production launch dan day-2 operations. Asumsi pembaca: senior fullstack
+> engineer yang sudah memahami stack di Bagian III. Untuk konteks
+> bisnis/produk, lihat Part I–II; untuk arsitektur, lihat Part III; untuk
+> roadmap fase, lihat Sec. 66.
+
+## 87. Pre-Flight Checklist (Sebelum Mulai Coding)
+
+### 87.1 Akun & Layanan Yang Wajib Disiapkan
+
+| Layanan | Tujuan | Plan awal | Catatan |
+| --- | --- | --- | --- |
+| GitHub Org | Source control, CI/CD, ADR | Team ($4/dev) | Aktifkan branch protection dan required checks |
+| Vercel atau Coolify host | Deploy app `web` | Coolify VPS (1× 8 vCPU / 16GB) | Coolify default; Vercel hanya jika butuh edge |
+| PostgreSQL (managed) | DB primary + standby | Neon / Supabase / Render | Pilih region SG (default tenant Indo/SEA) |
+| Redis (managed) | Queue + cache | Upstash / Render | Min 1GB, persistence ON |
+| Cloudflare R2 | Storage objek | Pay-as-you-go | Buat 3 bucket: `teskel-prod`, `teskel-staging`, `teskel-templates` |
+| Cloudflare DNS + WAF | DNS, TLS, anti-DDoS | Free + Pro $20 | Pasang WAF rules dari Phase 1 |
+| Stripe | Billing + Connect | Standard | Aktifkan Stripe Tax sandbox saat Phase 3 |
+| Resend | Email transaksional | Free → $20 | Verifikasi domain `teskel.app` (SPF, DKIM, DMARC) |
+| OpenRouter | AI gateway | Pay-as-you-go | Set spend limit & alert |
+| Langfuse | LLM observability | Cloud free → self-host Phase 4 | DSN ke `LANGFUSE_*` |
+| Sentry | Errors + tracing | Team plan | DSN per environment |
+| Grafana Cloud | Logs + metrics | Free → Pro | Atau self-host Loki+Grafana di Coolify |
+| PostHog | Product analytics | Cloud free → self-host opsional | EU region untuk data residency |
+| E2B | Sandbox execution | Pay-as-you-go | Pasang `E2B_API_KEY` |
+| Liveblocks | Realtime collab | Free → Starter | Pasang `LIVEBLOCKS_SECRET_KEY` |
+| Better Stack atau Statuspage | Uptime + status page | Starter | Konek ke alert pipeline |
+| 1Password / Doppler | Secret manager team | Team plan | Single source of truth env |
+| Linear / GitHub Projects | PM/issue tracker | Free | Naming `TESKEL-*` |
+| Notion atau Outline | Docs internal + ADR | Free | Folder `Engineering/ADR` |
+| Discord | Community channel | Free | Setup Phase 1, public Phase 3 |
+
+### 87.2 Tooling Lokal (Mesin Engineer)
+
+```bash
+# Versi pinned (lihat Sec. 17.2)
+mise use --global node@20.18.0
+mise use --global pnpm@9.12.3
+mise use --global postgresql@16.6
+mise use --global redis@7.4
+
+# CLIs
+npm i -g @stripe/stripe-cli wrangler vercel coolify-cli supabase   # opsional
+brew install gh git-lfs jq direnv pre-commit
+brew install --cask docker
+
+# IDE
+# VS Code dengan ekstensi: ESLint, Prettier, Biome, Drizzle Snippets, Tailwind CSS,
+# Hono, GitLens, GitHub Copilot atau Continue.dev
+```
+
+### 87.3 Kebijakan Tim & Proses Yang Diset Lebih Dulu
+
+- Branching: trunk-based dengan short-lived feature branches; merge via PR.
+- Commit convention: Conventional Commits (`feat:`, `fix:`, `chore:`).
+- PR template di `.github/pull_request_template.md` (DoD, screenshots,
+  rollback plan, telemetry).
+- Code owners di `CODEOWNERS` (lihat 17.5).
+- Sprint cadence: 1 minggu (lihat Sec. 70).
+- Standup async di Linear/Slack jam 09:00 WIB.
+
+### 87.4 Rekening, Legal & Compliance Awal
+
+- Entitas legal aktif (PT/Inc) supaya bisa buka Stripe live.
+- Domain `teskel.app` (atau `.ai` / `.dev`) terdaftar + DNSSEC ON.
+- Privacy Policy, Terms of Service, DPA template draft (Notion).
+- Cyber insurance quote (akan aktif Phase 3).
+- DPO / Privacy lead ditunjuk sejak Day 0 (orang internal).
+
+### 87.5 Bootstrap Day-0 (Hari Sebelum Mulai Phase 0)
+
+```bash
+# 1. Init repo + branch protection
+gh repo create yahyaxbt/teskel --private --description "TESKEL platform"
+gh api repos/yahyaxbt/teskel/branches/main/protection -X PUT -f required_status_checks.strict=true ...
+
+# 2. Tag baseline (kosong) supaya release semver bisa dimulai dari 0.1.0
+git tag v0.0.0 && git push --tags
+
+# 3. Provision Postgres + Redis di Coolify / managed; simpan connection
+#    string ke 1Password vault `TESKEL/dev`
+
+# 4. Buat 3 environment di Coolify: dev (preview), staging, prod
+# 5. Setel DNS app.teskel.app → Coolify load balancer; aktifkan TLS
+
+# 6. Set 1Password vault structure:
+#    TESKEL/
+#      ├── dev/
+#      ├── staging/
+#      ├── prod/
+#      └── shared/
+#    Tambahkan semua env wajib (lihat Sec. 84).
+```
+
+Exit gate Day-0: setiap engineer bisa `pnpm dev` di mesin lokal hingga
+hello-world Next.js terlihat di `http://localhost:3000`.
+
+## 88. Phase 0 Walkthrough — Foundation (Minggu 1–4)
+
+Tujuan: arsitektur dasar berdiri (monorepo, DB, auth, deploy, CI),
+hello-world deploy ke prod.
+
+### 88.1 Minggu 1 — Monorepo Init + DB Schema Awal
+
+**Day 1: scaffold monorepo.**
+
+```bash
+mkdir teskel && cd teskel
+pnpm init -y
+pnpm add -wD turbo typescript @types/node tsx prettier
+pnpm add -wD eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+mkdir -p apps/web apps/api packages/db packages/ui packages/shared \
+         packages/auth packages/ai packages/queue packages/sdk \
+         packages/testing infra docs
+
+# pnpm-workspace.yaml
+cat > pnpm-workspace.yaml <<EOF
+packages:
+  - "apps/*"
+  - "packages/*"
+EOF
+
+# turbo.json minimal (lihat Sec. 17.4)
+cat > turbo.json <<EOF
+{
+  "\$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": { "dependsOn": ["^build"], "outputs": ["dist/**", ".next/**"] },
+    "dev": { "cache": false, "persistent": true },
+    "lint": {},
+    "typecheck": { "dependsOn": ["^typecheck"] },
+    "test": { "dependsOn": ["^build"], "outputs": ["coverage/**"] }
+  }
+}
+EOF
+```
+
+**Day 2: scaffold `apps/web` (Next.js 15) dan `apps/api` (Hono).**
+
+```bash
+# Web
+cd apps/web
+pnpm dlx create-next-app@latest . --ts --tailwind --eslint --app \
+  --src-dir --import-alias "@/*"
+pnpm add @tanstack/react-query zustand framer-motion lucide-react
+
+# API
+cd ../api
+pnpm init -y
+pnpm add hono @hono/node-server @hono/zod-validator zod
+pnpm add -D @types/node tsx
+mkdir src && cat > src/index.ts <<EOF
+import { Hono } from 'hono';
+const app = new Hono();
+app.get('/healthz', (c) => c.json({ ok: true }));
+export default app;
+EOF
+```
+
+**Day 3-5: DB + Drizzle.**
+
+```bash
+cd ../../packages/db
+pnpm init -y
+pnpm add drizzle-orm postgres
+pnpm add -D drizzle-kit
+
+# schema.ts (lihat Sec. 21 + Appendix A)
+# Buat tabel orgs, users, memberships dulu
+pnpm drizzle-kit generate
+pnpm drizzle-kit push  # dev only
+
+# packages/db/index.ts ekspor `db` instance
+```
+
+**Akhir Minggu 1:**
+
+- [ ] `pnpm dev` jalan di web + api.
+- [ ] Connection ke Postgres prod bisa via `psql $DATABASE_URL`.
+- [ ] Drizzle migration pertama applied.
+- [ ] `apps/web/src/app/page.tsx` menampilkan "TESKEL".
+
+### 88.2 Minggu 2 — Auth (Better Auth) + Org
+
+**Day 1-2: install Better Auth.**
+
+```bash
+cd packages/auth
+pnpm init -y
+pnpm add better-auth better-auth/plugins
+pnpm add -D drizzle-kit
+
+# auth.ts: konfigurasi adapter Drizzle + plugin (organization, two-factor,
+# passkey, magic-link)
+```
+
+`packages/auth/src/server.ts`:
+
+```ts
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { organization, twoFactor, magicLink } from 'better-auth/plugins';
+import { db } from '@teskel/db';
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, { provider: 'pg' }),
+  emailAndPassword: { enabled: true, requireEmailVerification: true },
+  plugins: [
+    organization({
+      allowUserToCreateOrganization: true,
+      organizationLimit: 5,
+    }),
+    twoFactor(),
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await sendEmail(email, 'magic-link', { url });
+      },
+    }),
+  ],
+});
+```
+
+**Day 3-4: integrasi auth di web + api.**
+
+- Mount `/api/auth/*` route di Hono / Next route handler.
+- Buat helper `getSession()` dan `requireSession()`.
+- Sign-up + sign-in pages di web.
+- Organization create wizard pada signup.
+
+**Day 5: RLS dasar.**
+
+- Buat `current_org()` function, enable RLS pada tabel `projects`,
+  `workflows`, `runs`, `templates` (lihat Appendix A).
+- Wrap setiap API request dengan middleware `withTenant(orgId)`.
+
+**Akhir Minggu 2:**
+
+- [ ] User bisa sign-up email+password dan magic-link.
+- [ ] User pertama otomatis bikin org.
+- [ ] Cross-tenant test: sebagai user Org B tidak bisa baca data Org A
+  (write integration test).
+
+### 88.3 Minggu 3 — Coolify Deploy + CI/CD
+
+**Day 1-2: dockerize + Coolify.**
+
+`apps/web/Dockerfile`:
+
+```dockerfile
+FROM node:20-alpine AS base
+RUN corepack enable
+WORKDIR /app
+COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
+COPY apps/web ./apps/web
+COPY packages ./packages
+RUN pnpm install --frozen-lockfile && pnpm --filter web build
+
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=base /app /app
+EXPOSE 3000
+CMD ["pnpm", "--filter", "web", "start"]
+```
+
+- Buat resource `web` dan `api` di Coolify, point ke repo + branch.
+- Set environment variables (semua dari Sec. 84) lewat Coolify UI atau
+  Doppler integration.
+- Aktifkan auto-deploy on push to `main`.
+
+**Day 3-4: GitHub Actions.**
+
+`.github/workflows/ci.yml`:
+
+```yaml
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run lint typecheck test build
+```
+
+**Day 5: branch protection + secrets.**
+
+- Required checks: `ci`.
+- Reviewers: minimum 1.
+- Set repository secrets dari 1Password (vault `TESKEL/shared/ci`).
+
+**Akhir Minggu 3:**
+
+- [ ] Push ke `main` auto-deploy ke `https://app.teskel.app`.
+- [ ] PR build hijau dalam ≤6 menit.
+- [ ] Preview environment per PR aktif (Coolify).
+
+### 88.4 Minggu 4 — Observability + ADR + Exit Gate
+
+**Day 1-2: wiring observability.**
+
+```bash
+# Sentry
+pnpm add @sentry/nextjs @sentry/node
+# init di apps/web/sentry.{client,server}.config.ts dan apps/api/src/sentry.ts
+
+# OpenTelemetry
+pnpm add @opentelemetry/api @opentelemetry/sdk-node \
+         @opentelemetry/exporter-trace-otlp-http
+# init di apps/api/src/otel.ts (lihat 39.1)
+
+# PostHog
+pnpm add posthog-js posthog-node
+# init di apps/web/src/lib/analytics.ts (lihat 63)
+```
+
+**Day 3: dashboards & alerts.**
+
+- Grafana Cloud dashboard "Phase 0 Health": HTTP 5xx rate, latency p95,
+  DB connections, Redis memory, error rate per service.
+- Alert: 5xx > 1% selama 5 menit → PagerDuty Sev2.
+
+**Day 4: ADR initial batch.**
+
+- ADR-0001 Auth (Better Auth).
+- ADR-0002 ORM (Drizzle, Prisma sebagai fallback).
+- ADR-0003 Queue (BullMQ; rationale untuk Inngest sebagai jalur kedua).
+- ADR-0009 Frontend framework.
+- ADR-0010 Deployment platform.
+
+**Day 5: exit gate Phase 0.**
+
+| Item | Verifikasi |
+| --- | --- |
+| Hello-world deploy | Buka `https://app.teskel.app` |
+| Auth e2e | Sign-up + sign-in + 2FA opt-in |
+| Org isolation | Test cross-tenant Postgres |
+| CI hijau | Lihat last `main` run |
+| Observability | Sentry event muncul saat trigger error sample |
+| 5 ADR draft | Notion `Engineering/ADR` |
+
+Tag release: `v0.1.0` (Phase 0 done).
+
+## 89. Phase 1 Walkthrough — Core Workflow + AI (Minggu 5–10)
+
+Tujuan: workflow visual + AI calls bisa dieksekusi end-to-end.
+
+### 89.1 Minggu 5 — AI Gateway + Prompt Registry
+
+**Implementasi `packages/ai`.**
+
+```ts
+// packages/ai/src/gateway.ts
+import { OpenAI } from 'openai';
+const openai = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+});
+
+export const aiClient = {
+  chat: async ({ model, messages, traceId, orgId }) => {
+    const res = await openai.chat.completions.create({
+      model,
+      messages,
+      // tagging untuk Langfuse
+      extra_headers: { 'X-Trace-Id': traceId, 'X-Org-Id': orgId },
+    });
+    await meterUsage(orgId, model, res.usage);
+    await langfuse.trace({ id: traceId, model, messages, response: res });
+    return res;
+  },
+};
+```
+
+**Prompt registry.**
+
+- Tabel `prompts(id, slot, version, content, meta, created_at)`.
+- API CRUD untuk prompt.
+- UI Studio: list slots, lihat versi, diff.
+- Helper `getPrompt(slot)` yang resolve versi terbaru atau yang dipin.
+
+**Eval suite (Promptfoo).**
+
+- File `evals/prompts/<slot>.yaml`.
+- Run di GitHub Actions (cron daily).
+- Threshold pass: regression detector dari golden set.
+
+### 89.2 Minggu 6 — Workflow Studio (React Flow)
+
+**Frontend.**
+
+```bash
+pnpm --filter web add reactflow @xyflow/react zustand
+```
+
+- Komponen `<WorkflowEditor/>` di `apps/web/src/features/workflow/`.
+- Custom node types: `start`, `llm`, `http`, `branch`, `code`, `end`.
+- Sidebar palette + properties panel.
+- Auto-save graph ke API setiap 5 detik.
+
+**Backend.**
+
+- Route `POST /v1/workflows`, `PATCH /v1/workflows/:id` (validate Zod).
+- Tabel `workflows(... graph jsonb ...)` — lihat Sec. 21 + Appendix A.
+
+### 89.3 Minggu 7 — BullMQ + Worker + Run Viewer
+
+```bash
+pnpm --filter @teskel/queue add bullmq ioredis
+```
+
+```ts
+// packages/queue/src/queues.ts
+import { Queue } from 'bullmq';
+const connection = { host: REDIS_HOST, port: REDIS_PORT };
+export const workflowsQueue = new Queue('workflows', { connection });
+
+// packages/queue/src/worker.ts
+import { Worker } from 'bullmq';
+import { runWorkflow } from '@teskel/runner';
+
+new Worker('workflows', async (job) => {
+  await runWorkflow(job.data);
+}, { connection, concurrency: 8 });
+```
+
+- Endpoint `POST /v1/workflows/:id/runs` enqueue job.
+- Status streaming via Server-Sent Events `/v1/runs/:id/stream`.
+- Run viewer UI menampilkan node-by-node trace + cost.
+
+### 89.4 Minggu 8 — Knowledge Base + pgvector
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+-- knowledge_chunks (lihat Appendix A)
+```
+
+- Service ingest: file upload → chunk (1000 tokens, overlap 100) → embed
+  → upsert pgvector.
+- Query: cosine top-k + filter `org_id = current_org()`.
+- Rate limit ingest per org (10MB/menit free, 100MB/menit pro).
+
+### 89.5 Minggu 9 — 3 Seed Templates
+
+- Template 1: AI Lead Capture & Enrichment.
+- Template 2: AI Customer Support Bot.
+- Template 3: Content Engine Multi-Lang.
+
+Setiap template ditulis sebagai folder di `seeds/templates/<slug>/`
+mengikuti spec di Sec. 58 + Appendix C.
+
+Loader di `packages/template-engine` parse manifest, validate, install ke
+DB target org.
+
+### 89.6 Minggu 10 — Marketplace Skeleton + Exit Gate
+
+- Listing browse (`/marketplace`) — query templates `status=published`.
+- Template detail page (`/templates/[slug]`) — README, screenshots,
+  pricing, install button.
+- Free install button → trigger loader.
+- Tag rilis `v0.2.0`.
+
+**Exit gate Phase 1:**
+
+| Item | Verifikasi |
+| --- | --- |
+| AI workflow run | "Lead Gen" template bisa dieksekusi end-to-end |
+| Logs trace | Langfuse menampilkan call AI dengan cost & latency |
+| Run history | UI menampilkan riwayat 10 runs terakhir |
+| KB ingest | File 5MB bisa di-ingest dan ditanya via prompt |
+| Marketplace browse | 3 template muncul, install ke org sandbox |
+| Synthetic monitor | Better Stack jalankan run hourly |
+
+## 90. Phase 2 Walkthrough — Visual Builder + Sandbox (Minggu 11–16)
+
+Tujuan: pengguna bisa generate app dari template, sandbox aman, SDK + CLI
+tersedia.
+
+### 90.1 Minggu 11 — Puck Integration
+
+```bash
+pnpm --filter web add @measured/puck
+```
+
+- Mount editor di `/projects/[id]/builder`.
+- Persist data Puck ke tabel `pages(... data jsonb ...)`.
+- Render output via `<Render data={data} config={config} />` di route
+  publik project.
+
+### 90.2 Minggu 12 — Block Library v1 + Theme Tokens
+
+- Block: header, hero, feature-grid, list, form, table, chart, faq, cta,
+  footer.
+- Theme tokens dipakai: `accent`, `radius`, `density` dari org settings.
+- AI command palette `/ask` — generate blok dari deskripsi natural.
+
+### 90.3 Minggu 13 — E2B Sandbox + Workflow Code Node
+
+```bash
+pnpm --filter @teskel/runner add e2b @e2b/code-interpreter
+```
+
+- Wrapper `runInSandbox(code, { timeout, memory, egressAllowlist })`.
+- Workflow node `code`: jalankan TS/Python di E2B.
+- Logging stdout/stderr ke run trace.
+- Policy enforcement (egress, max runtime, max memory) dari Sec. 32.4.
+
+### 90.4 Minggu 14 — Project Export + Per-Project Preview
+
+- `POST /v1/projects/:id/export` → zip + push ke repo Git buyer (jika
+  set).
+- Per-project preview environment via Coolify project API.
+- Custom domain (CNAME) opsional Phase 3.
+
+### 90.5 Minggu 15 — SDK + CLI v0
+
+```bash
+# packages/sdk
+pnpm init -y
+pnpm add hono
+# expose typed RPC client (lihat Appendix B)
+
+# packages/cli
+pnpm add commander conf undici
+# command: teskel login | init | dev | deploy | template validate
+```
+
+- Publish `@teskel/sdk` dan `teskel-cli` ke npm (private scope dulu).
+
+### 90.6 Minggu 16 — AI Assistant Intra-App + Exit Gate
+
+- Pengguna Pro+ punya copilot di workspace ("/ask" anywhere).
+- Copilot bisa: jelaskan workflow, suggest next node, apply patch (PR-
+  style).
+- Tag rilis `v0.3.0`.
+
+**Exit gate Phase 2:**
+
+| Item | Verifikasi |
+| --- | --- |
+| Visual app | User bikin SaaS sederhana tanpa nulis kode > 1 callback |
+| Sandbox | Code node sandbox lulus pen-test internal (no host access) |
+| SDK install | `npm i @teskel/sdk` di proyek eksternal — type-safe |
+| CLI deploy | `teskel deploy` selesai dalam ≤2 menit |
+| Load test | 100 RPS workflow execution ≤500ms p95 |
+
+## 91. Phase 3 Walkthrough — Marketplace + Creator Economy (Minggu 17–22)
+
+Tujuan: creator bisa publish & monetize template; buyer beli & install
+dengan refund/dispute pipeline.
+
+### 91.1 Minggu 17 — Stripe Connect + KYC
+
+```bash
+pnpm --filter @teskel/billing add stripe
+```
+
+- Onboarding Connect Standard via redirect (lihat 57.1).
+- Webhook handler: `account.updated`, `payout.paid`, `charge.dispute.created`.
+- Tabel `creator_profiles(... stripe_account_id, kyc_status ...)`.
+
+### 91.2 Minggu 18 — Listing Flow + Moderation
+
+- Form publish (5 step wizard): metadata, screenshots, pricing,
+  permissions, signing.
+- Tabel `listings(... status ...)` enum: `draft`, `submitted`,
+  `in_review`, `approved`, `rejected`, `live`.
+- Moderation queue UI internal (`/__admin/moderation`).
+- Pipeline otomatis (Sec. 59.2) dijalankan di queue.
+
+### 91.3 Minggu 19 — Buy / Install Flow
+
+- Pricing display: free / one-time / subscription.
+- Stripe Checkout (one-time) atau Subscription untuk recurring.
+- Webhook `checkout.session.completed` → buat `licenses` row → trigger
+  install.
+
+### 91.4 Minggu 20 — Refund + Reviews + Reports
+
+- 7-hari refund window: API `POST /v1/orders/:id/refund` issue refund di
+  Stripe + invalidate license.
+- Reviews 1-5 stars, body teks.
+- Report flag: spam, scam, harassment, broken — masuk queue moderasi.
+
+### 91.5 Minggu 21 — Verified Badge + Creator Analytics
+
+- Application form Verified Creator (manual review tim TESKEL).
+- Dashboard analytics creator: views, install conv, revenue, refunds,
+  rating.
+
+### 91.6 Minggu 22 — SEO MVP + Exit Gate
+
+- Programmatic landing per template + creator profile.
+- Sitemap multi-file.
+- Hreflang en/id.
+- Tag rilis `v0.4.0`.
+
+**Exit gate Phase 3:**
+
+| Item | Verifikasi |
+| --- | --- |
+| 25 template live | Marketplace count |
+| 5 creator paid out | Stripe Connect dashboard |
+| GMV running | Stripe weekly report |
+| Refund SLA | <2 menit dari klik tombol |
+| Moderation SLA | First response 3 hari, decision 7 hari |
+
+## 92. Phase 4 Walkthrough — Scale, SLA, Enterprise (Minggu 23–34)
+
+Tujuan: siap kontrak Enterprise + SOC2 Type 1 + multi-region opsional.
+
+### 92.1 Minggu 23–24 — SAML SSO + SCIM
+
+- Aktifkan plugin SAML di Better Auth (`@better-auth/sso`).
+- Per-org SSO config (Idp metadata URL, certificate).
+- SCIM endpoint untuk auto-provisioning user.
+
+### 92.2 Minggu 25–26 — Audit Log Eksternal + SIEM Export
+
+- Tabel `audit_log(... actor, target, verb, payload, signed_hash ...)`.
+- Hash chain (Merkle) supaya bisa dideteksi tamper.
+- Export S3 hourly + relay ke SIEM customer (Splunk / Datadog).
+
+### 92.3 Minggu 27–28 — Multi-Region Read Replica + Standby
+
+- Provision Postgres standby di region kedua (US East / EU).
+- Read replica untuk reporting / analytics.
+- Failover runbook tested via GameDay.
+
+### 92.4 Minggu 29–30 — DR Runbooks + GameDay
+
+- Runbook: kehilangan primary DB, kehilangan Redis, region outage,
+  sandbox provider outage, Stripe outage.
+- GameDay quarter pertama: simulasikan kehilangan primary, ukur RTO
+  aktual, perbaiki gap.
+
+### 92.5 Minggu 31–34 — SOC2 Type 1 Audit Close
+
+- Pilih auditor (BDO, A-LIGN, atau via Vanta/Drata).
+- Kumpulkan evidence (logs, screenshots, policy docs).
+- Remediation gap (akses kontrol, change management, etc.).
+- Audit report tertanda → push ke security trust center.
+- Tag rilis `v1.0.0` (GA Enterprise).
+
+**Exit gate Phase 4:**
+
+| Item | Verifikasi |
+| --- | --- |
+| SOC2 Type 1 | Report file |
+| ≥3 customer Enterprise paid | Stripe / contracts |
+| Failover RTO ≤30 menit | GameDay metric |
+| SAML SSO live | 1 customer pakai |
+| SCIM provisioning | 1 customer pakai |
+
+## 93. Phase 5 Walkthrough — AI Native UX & Vertical Templates (Minggu 35–46)
+
+Tujuan: AI Designer (NL → app) GA + 5 vertical bundle siap.
+
+### 93.1 Minggu 35–36 — NL → App Planner
+
+- Input: deskripsi natural.
+- Output: multi-step plan JSON (entitas, halaman, workflow, prompts,
+  data model).
+- UI handoff: review plan → klik "Generate" → spawn project + workflow +
+  blocks otomatis.
+
+### 93.2 Minggu 37–38 — Inline Workflow Copilot
+
+- Suggestion engine di canvas: "next node yang sering dipakai", "refactor
+  branch ini".
+- Apply patch reversible (history).
+
+### 93.3 Minggu 39–43 — Vertical Packs
+
+| Vertical | Komponen kunci |
+| --- | --- |
+| Healthcare-CRM | Pasien CRUD, SOAP notes, appointment, BPJS adapter |
+| Education-LMS | Course, enrollment, quiz, gamifikasi |
+| Retail-Loyalty | Member, point, redeem, kupon, integrasi POS |
+| Logistics-Tracker | Tracking number, geo-event, ETA, PDF surat jalan |
+| Finance-Reporter | Konsolidasi PnL, dashboard sheet, export PDF |
+
+Setiap vertical pack = 1 template + 3-5 workflow + theme + content.
+
+### 93.4 Minggu 44–46 — SOC2 Type 2 Audit Close
+
+- 6-12 bulan window observation (mulai dari saat Type 1 close).
+- Continuous control evidence (Vanta/Drata otomatis).
+- Audit report Type 2 close.
+- Tag rilis `v1.5.0`.
+
+**Exit gate Phase 5:**
+
+| Item | Verifikasi |
+| --- | --- |
+| AI Designer adoption | ≥50% Pro+ user pakai sekali |
+| 5 vertical pack | Marketplace listed |
+| SOC2 Type 2 | Report file |
+
+## 94. Phase 6 Walkthrough — Enterprise & Compliance Plus (Minggu 47–60)
+
+Tujuan: ISO 27001 + (opsional) HIPAA/GDPR posture + self-host package.
+
+### 94.1 Minggu 47–50 — ISO 27001
+
+- Gap analysis (sebagian besar overlap dengan SOC2).
+- Implementasi kontrol baru (asset management, BCP, supplier mgmt).
+- Stage 1 audit → remediation → Stage 2 audit.
+
+### 94.2 Minggu 51–53 — HIPAA Add-on + BAA
+
+- Tambah BAA template, sign per customer.
+- Encryption at rest field-level untuk PHI.
+- Audit log enhanced (per-record access).
+- HIPAA training internal team.
+
+### 94.3 Minggu 54–55 — Region Pinning
+
+- `tenant.region` field; routing per request ke region yang sesuai.
+- Data residency report untuk customer.
+
+### 94.4 Minggu 56–57 — Self-Host Helm Chart
+
+- Containerize semua service.
+- Helm chart `teskel/teskel` di registry.
+- Dokumentasi `docs.teskel.app/self-host`.
+
+### 94.5 Minggu 58–60 — EU AI Act Mapping + GA Enterprise+
+
+- Klasifikasi template per kategori risiko EU AI Act.
+- Conformity assessment dokumen (high-risk only).
+- Tag rilis `v2.0.0` (Enterprise Plus GA).
+
+**Exit gate Phase 6:**
+
+| Item | Verifikasi |
+| --- | --- |
+| ISO 27001 cert | Certificate file |
+| ≥1 deal HIPAA | Signed BAA |
+| Self-host customer | ≥1 customer running on-prem |
+| EU AI Act mapping | All templates labeled |
+
+## 95. Final Cutover & Public Launch Playbook
+
+> Catatan: "Final" di sini = momen GA besar (mis. akhir Phase 1 Public
+> Beta, akhir Phase 3 GA monetized, atau akhir Phase 4 Enterprise GA).
+> Playbook ini berlaku setiap kali terjadi cutover skala besar.
+
+### 95.1 T-30 Hari — Code Freeze & Audit
+
+- [ ] Soft freeze: hanya P0 fix masuk `main`.
+- [ ] Pen-test dijadwal & dimulai.
+- [ ] Load test 5x peak diselesaikan (lihat Sec. 43.2).
+- [ ] Backup + restore drill.
+- [ ] DPA, Privacy Policy, ToS final review legal.
+- [ ] Marketing copy + landing page A/B variant lock.
+
+### 95.2 T-14 Hari — Final Pen-Test Close + Marketing Asset
+
+- [ ] Pen-test report: P0/P1 close, P2 ditrack di Linear.
+- [ ] Status page live di `status.teskel.app`.
+- [ ] On-call rotation diumumkan ke tim.
+- [ ] Press kit + screenshots ready.
+- [ ] Email cadence di Resend: warm-up D-7, D-3, D-1, D-0.
+
+### 95.3 T-7 Hari — Dress Rehearsal
+
+- [ ] Run launch sequence di staging dengan timeline aktual.
+- [ ] Simulasikan Sev1 (`break-glass`): rotate Stripe key, restore DB,
+  switch sandbox provider.
+- [ ] Test customer flow: signup → onboarding → first deploy → first
+  workflow → first invoice.
+- [ ] Latihan tim CS jawab 50 ticket sample.
+
+### 95.4 T-1 Hari — GameDay + Go/No-Go
+
+- [ ] GameDay: kill primary worker, drop standby DB, simulate AI provider
+  outage. Pulih dalam SLA?
+- [ ] Final go/no-go meeting (CEO + CTO + Eng Lead + PM + CS Lead).
+- [ ] Lock prod: only on-call dapat deploy.
+- [ ] Banner "scheduled launch" diumumkan di blog + email.
+
+### 95.5 T-0 — Launch Sequence (Hour by Hour)
+
+| Jam | Aksi | Owner | Verifikasi |
+| --- | --- | --- | --- |
+| H-2 | Deploy versi GA ke prod (canary 10%) | SRE | Healthcheck + Sentry |
+| H-1 | Monitor canary; rollback siaga | SRE | Error rate <0.5% |
+| H-0 | Promote canary 100% | SRE | All replicas serving |
+| H+0 | Update status page → "operational" | IC | Public OK |
+| H+5m | Publish blog post + tweet | Marketing | URL live |
+| H+15m | Post Product Hunt + Hacker News + Indie Hackers | Marketing | Submission live |
+| H+30m | Email blast warm list | Marketing | Resend delivery >95% |
+| H+1h | Sync standup launch room | All | Issues triaged |
+| H+2h | Webinar / live Q&A (opsional) | DevRel | Recording uploaded |
+| H+4h | Daily review dashboard | PM | Funnel & error |
+| H+12h | First retrospective notes | PM | Notion entry |
+
+### 95.6 T+1..30 Hari — Post-Launch Operations
+
+- Daily standup khusus "Launch Watch" 30 menit.
+- Daily metrics review: signup, activation, error rate, AI cost burn,
+  Stripe receipts.
+- Hotfix lane: dedicated branch `hotfix/*` direct merge dengan 1
+  reviewer.
+- Update changelog setiap rilis (publik di `/changelog`).
+- Customer success outreach 1:1 untuk top 20 paying orgs.
+- Press follow-ups + podcast interview booking.
+
+### 95.7 First Quarter Review (T+90 Hari)
+
+- Health metrics vs target (Sec. 7).
+- Postmortem tiap incident Sev1/Sev2 dipublik.
+- Update risk register (Sec. 74).
+- Cost review: AI burn, infra cost, gross margin per plan.
+- Roadmap re-prioritization untuk fase berikutnya.
+
+## 96. Day-2 Operations (Setelah Final / Steady State)
+
+### 96.1 Cadence Release
+
+- **Train release** Selasa & Kamis 10:00 WIB.
+- Hotfix kapan saja jika Sev1/Sev2 active.
+- Versi semver (`major.minor.patch`); breaking change membutuhkan major
+  bump + 60 hari deprecation notice.
+- Changelog dipublikasi otomatis dari Conventional Commits.
+
+### 96.2 Cadence Security & Compliance
+
+- Mingguan: dependency scan (Snyk/Dependabot), prompt eval suite.
+- Bulanan: access review, secret rotation due-list, penetration smoke.
+- Kuartalan: GameDay, BCP/DR drill, SOC2 control attestation refresh.
+- Tahunan: pentest eksternal, ISO surveillance audit, SOC2 Type 2.
+
+### 96.3 Cadence Finance / FinOps
+
+- Mingguan: cost dashboard review (AI, infra, payout outflows).
+- Bulanan: invoice / receivables, plan ratio, churn cohort.
+- Kuartalan: pricing optimization (Sec. 60.6) berdasarkan A/B + cohort
+  data.
+
+### 96.4 Cadence Growth
+
+- Mingguan: funnel & activation; A/B winners promote, losers kill.
+- Bulanan: SEO ranking, content calendar, partnership pipeline.
+- Kuartalan: NPS survey, customer advisory board, roadmap voting.
+
+### 96.5 Continuous Improvement Loop
+
+- Setiap incident → postmortem ≤5 hari kerja → action items dengan owner
+  + due date di Linear (visibility ke seluruh tim).
+- Setiap quarter "Engineering Excellence Week": dedicated time refactor,
+  bayar tech debt, upgrade dependency major.
+- "What we learned" newsletter monthly internal.
+
+## 97. Common Pitfalls Per Phase + Mitigation
+
+| Phase | Pitfall | Mitigasi cepat |
+| --- | --- | --- |
+| 0 | Build time CI >10 menit | Cache pnpm + Turborepo remote cache; split job |
+| 0 | Drizzle migration drift | Wajib `drizzle-kit check` di CI; PR template ada DB checklist |
+| 0 | Better Auth session tidak terbawa lintas subdomain | Set `cookieDomain: '.teskel.app'`, `secureCookies: true` |
+| 1 | Workflow run hang | Tambah timeout absolut 60s (workflow level) + 10s (step) |
+| 1 | LLM cost spike tak terkontrol | Per-org daily cap di gateway + alert >70% |
+| 1 | KB ingest blocking event loop | Pindah ke worker khusus (`ingest` queue) |
+| 2 | Puck data schema berubah breaking | Versi konfigurasi blok; migration up/down |
+| 2 | Sandbox egress accidental | Default-deny + allowlist domain per template |
+| 2 | Preview env naik biaya | Auto-suspend setelah 24 jam tidak diakses |
+| 3 | Stripe webhook duplikat | Idempotency key: `event.id`; simpan `processed_events` |
+| 3 | Listing review bottleneck | Auto-reject yang gagal validasi schema; tugaskan reviewer rotational |
+| 3 | Refund + clawback creator wallet | Lock-up minimal 7 hari sebelum payout |
+| 4 | SAML config customer salah → user terkunci | Test endpoint `/sso/test` + fallback magic-link admin |
+| 4 | Audit log tabel >500GB | Partition + cold storage S3 90+ hari |
+| 5 | NL → app halusinasi entitas | Plan harus dikonfirmasi user sebelum `Generate` |
+| 5 | Vertical pack maintenance lupa | Owner per pack + quarterly review |
+| 6 | ISO 27001 dokumen kadaluarsa | Tooling Vanta/Drata + DRI per control |
+| Final | Status page lupa update | Otomatisasi via Better Stack alerts → Statuspage API |
+| Final | Email blast spam-flagged | Warm-up domain + IP, batch <50k/jam, list hygiene |
+
+## 98. Local Dev → Prod Promotion Checklist (Per Story)
+
+Sebelum merge PR ke `main`:
+
+- [ ] Lint + typecheck + test hijau di CI.
+- [ ] Migrasi DB reversible (atau backfill plan tertulis).
+- [ ] Feature flag added (default OFF) jika user-visible besar.
+- [ ] Telemetry: event ditambah, dashboard updated.
+- [ ] Docs: README/CHANGELOG/User docs diupdate.
+- [ ] PR description: rollback plan + screenshots/recordings.
+- [ ] Reviewer ≥1, owner code domain ack-ed.
+
+Setelah merge:
+
+- [ ] Auto-deploy ke staging hijau (synthetic test pass).
+- [ ] Soft launch ke 10% via flag (jika applicable).
+- [ ] Monitor 24 jam → ramp 100%.
+- [ ] Hapus flag dalam 30 hari.
+
+Sebelum cutover/release besar (Sec. 95):
+
+- [ ] Lihat checklist di Sec. 85 + 95.
+
+## 99. Senior-Eng Decision Cheatsheet (Quick Reference)
+
+Daftar keputusan paling sering ditanya, supaya tim baru tidak debat:
+
+| Pertanyaan | Jawaban Default | Catatan |
+| --- | --- | --- |
+| Pakai Server Component atau Client? | Server, kecuali butuh state interaktif | Bungkus Client di leaf |
+| Fetch data di server atau pakai TanStack Query? | Initial render: Server. Real-time/refetch: TQ | Hindari double-fetch |
+| Tulis raw SQL atau Drizzle query? | Drizzle. Raw SQL hanya untuk query analitik kompleks | Selalu pakai parameter binding |
+| Kapan pakai Inngest, kapan BullMQ? | Cron / scheduled / step.ai → Inngest. Real-time short job, fan-out → BullMQ | Lihat Sec. 28 |
+| Better Auth plugin custom atau pakai bawaan? | Bawaan dulu, custom hanya jika gap nyata | ADR wajib jika custom |
+| Tulis langsung di DB atau outbox? | Outbox kalau ada side-effect pengguna luar (webhook/email) | Lihat 19.7 |
+| Pakai Liveblocks atau Yjs raw? | Liveblocks (managed presence + storage) | Yjs hanya untuk dokumen besar atau self-host |
+| Sandbox di E2B, Daytona, atau Modal? | E2B default. Daytona kalau butuh dev-env panjang. Modal kalau perlu GPU | Lihat 32 |
+| Pakai pgvector atau Qdrant? | pgvector default. Qdrant per Enterprise opt-in | >50M chunk → Qdrant |
+| Tulis kustom komponen UI atau pakai shadcn/ui? | shadcn/ui default; ekstend lewat composition | Hindari fork yang divergent |
+| Tulis migration manual atau drizzle-kit generate? | `generate` selalu. Manual hanya untuk index/constraints khusus | Test up + down |
+| Cache di Redis atau React Query saja? | TanStack di client; Redis untuk shared cross-instance | Hindari double cache invalidation |
+| Tambah deps baru — kapan boleh? | Hanya kalau menggantikan ≥50 baris kode kita & lisensi MIT/Apache | ADR kalau >100KB bundle |
+| Self-host atau pakai cloud provider service? | Cloud sampai $X/bulan, lalu evaluasi self-host | Hindari operasional 5 vendor sekaligus |
+| Buat ADR atau RFC? | ADR untuk keputusan dengan konsekuensi tahunan; RFC untuk eksplorasi | Lihat Appendix G |
+
 ---
 
-## Changelog v1 → v2
+## Changelog v1 → v2 → v2.1
+
+### v2.1 (Phase X — Senior Fullstack Build Walkthrough)
+
+- Tambah **Part X (Sec. 87–99)**: panduan eksekusi minggu-per-minggu dari
+  Day-0 (akun & tooling), Phase 0 (foundation) sampai Phase 6 (enterprise
+  & compliance plus), final cutover/public launch playbook (T-30 → T+90),
+  day-2 ops (release/security/finance/growth cadence), pitfalls per fase,
+  promotion checklist per-story, dan senior-eng decision cheatsheet.
+- Tambah perintah konkret bash/SQL/TS untuk scaffold monorepo, Drizzle,
+  Better Auth, BullMQ, E2B, Stripe Connect, sehingga PR pertama tiap fase
+  punya starting point yang jelas.
+- Tambah tabel akun & layanan eksternal yang harus disiapkan sebelum
+  coding, lengkap dengan plan awal dan catatan provisioning.
+- Tabel keputusan cepat (Sec. 99) supaya tim baru tidak debat ulang.
+
+### v2 (Initial restructure)
 
 - Restrukturisasi total ke 9 bagian (Strategy, Design, Architecture,
   Operations, Security, Growth, Build Plan, Risks, Reference).
