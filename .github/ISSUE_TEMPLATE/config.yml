@@ -1,0 +1,21 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/yahyaxbt/teskel/security/advisories/new
+    about: |
+      Do NOT open a public issue. Report privately via GitHub Security
+      Advisories or email security@teskel.dev. See SECURITY.md.
+  - name: Customer support / billing
+    url: https://app.teskel.app
+    about: |
+      Account, billing, refund, or product help — open a ticket from the app
+      or email billing@teskel.app. Do not file as a public issue.
+  - name: Code of Conduct concern
+    url: mailto:conduct@teskel.app
+    about: |
+      Reach out privately. Do not post in a public issue. See CODE_OF_CONDUCT.md.
+  - name: Question / discussion
+    url: https://github.com/yahyaxbt/teskel/discussions
+    about: |
+      For open-ended questions and design discussions, use GitHub
+      Discussions instead of an issue.

@@ -126,7 +126,7 @@ Clean • Modern • Global-Class • AI-Native • Production-Ready
   - [97. Common Pitfalls Per Phase](#97-common-pitfalls-per-phase--mitigation)
   - [98. Local Dev → Prod Promotion Checklist](#98-local-dev--prod-promotion-checklist-per-story)
   - [99. Senior-Eng Decision Cheatsheet](#99-senior-eng-decision-cheatsheet-quick-reference)
-- [Changelog v1 → v2 → v2.1](#changelog-v1--v2)
+- [Changelog v1 → v2 → v2.1 → v2.2 → v2.3 → v2.4 → v2.5 (FINAL)](#changelog-v1--v2--v21--v22--v23--v24--v25-final)
 
 ---
 
@@ -5041,7 +5041,100 @@ Daftar keputusan paling sering ditanya, supaya tim baru tidak debat:
 
 ---
 
-## Changelog v1 → v2 → v2.1 → v2.2 → v2.3 → v2.4 (FINAL)
+## Changelog v1 → v2 → v2.1 → v2.2 → v2.3 → v2.4 → v2.5 (FINAL)
+
+### v2.5 (Final — Skills Library Round 3 + Supporting Docs Expansion)
+
+> Status: **FINAL**. Plan tetap *executable single source of truth*.
+> Perubahan terhadap keputusan plan tetap wajib lewat jalur ADR/RFC
+> (Sec. 71 + Appendix G). v2.5 menambah dokumentasi penopang +
+> skill operasional yang sebelumnya hanya ada sebagai cross-link
+> placeholder.
+
+- **Skills library diperluas dari 31 → 37** untuk menutup gap di
+  fase review, eval LLM, triage bug, off-boarding tenant, forensics
+  audit log, dan postmortem:
+  - **Quality**:
+    [`run-eval`](./.agents/skills/run-eval/SKILL.md) — author + run
+    Promptfoo eval suite per slot, 4 case category (happy / boundary
+    / safety / regression-golden), threshold + drift sweep, gate
+    canary.
+    [`review-pr`](./.agents/skills/review-pr/SKILL.md) — checklist
+    13 hard-rules + security + perf + DoD; sama untuk human
+    reviewer dan AI reviewer.
+    [`triage-bug`](./.agents/skills/triage-bug/SKILL.md) — severity
+    rubric (Sev1/2/3/4), 12 surface, common-pattern table, output
+    adalah ticket actionable bukan fix.
+  - **Forensics & lifecycle**:
+    [`audit-log-query`](./.agents/skills/audit-log-query/SKILL.md)
+    — query hash-chained audit log, verifikasi hash chain, forensic
+    pattern lookup (login dari IP baru, escalation service principal,
+    install marketplace, LLM call di luar jam). Wajib ada ticket
+    sebelum query, replay-only replica, no IP raw di laporan.
+    [`tenant-offboarding`](./.agents/skills/tenant-offboarding/SKILL.md)
+    — pause → archive → export → erase, dual-control, grace window
+    per cause (30d default, 0d untuk DSAR / enforced / internal),
+    erase order Class B → F → A → E → C → D, special handling
+    untuk creator marketplace + Stripe Connect.
+  - **Process**:
+    [`write-postmortem`](./.agents/skills/write-postmortem/SKILL.md)
+    — blameless postmortem template untuk Sev1/Sev2; timeline,
+    contributing factors, action items dgn owner + due date,
+    quarterly review.
+- **Dokumentasi penopang baru** supaya skill-skill di atas + skill
+  yang sudah ada punya tempat untuk ditulis:
+  - [`docs/architecture/`](./docs/architecture/) — `README.md`,
+    `c4.md` (System & Container & Component diagram via Mermaid +
+    referensi ADR), `multi-tenancy.md` (RLS pattern, tenant
+    context, isolation test, helper Drizzle), `threat-model.md`
+    (STRIDE per komponen + mitigasi).
+  - [`docs/observability/`](./docs/observability/) — `README.md`,
+    `slo-sli.md` (SLO matrix per surface + error budget policy),
+    `dashboards.md` (Grafana inventory, alert routing, on-call
+    pager).
+  - [`docs/release/`](./docs/release/) — `README.md` (release train
+    schedule, canary stages, decision tree).
+  - [`docs/api/`](./docs/api/) — `conventions.md` (versioning,
+    error envelope, pagination, rate-limit headers, request-id),
+    `idempotency.md` (24h key window, scope, race handling, Stripe
+    pattern).
+  - [`docs/data/`](./docs/data/) — `retention.md` (Class A–F + table
+    catalog, retention period, deletion order, evidence).
+  - [`docs/marketplace/`](./docs/marketplace/) — `manifest-spec.md`
+    (template.yaml schema, validation rules, security rule, eval
+    rule).
+  - [`docs/billing/`](./docs/billing/) — `plans.md` (entitlement
+    matrix, feature flag mapping, overage policy, dunning).
+  - [`docs/onboarding/`](./docs/onboarding/) — `README.md`,
+    `new-engineer.md` (Day 1 / Week 1 / Week 2 / Month 1 checklist),
+    `new-agent.md` (kit konteks AI agent: dokumen yg wajib dibaca,
+    skill index, current phase, escalation triggers).
+  - [`docs/legal/`](./docs/legal/) — `README.md` (link ToS, Privacy
+    Policy, DPA, subprocessor list — placeholder sampai legal
+    finalisasi).
+  - Governance: [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) (Contributor
+    Covenant 2.1), [`SUPPORT.md`](./SUPPORT.md) (where to file bug /
+    feature / RFC / security issue).
+  - GitHub issue templates di [`.github/ISSUE_TEMPLATE/`](./.github/ISSUE_TEMPLATE/):
+    `bug_report.yml`, `feature_request.yml`, `rfc.yml`, `config.yml`
+    (links ke Discord, Discussions, Security policy).
+- **AGENTS.md naik 1.1.0 → 1.2.0**: §19 (Skills Library) diperluas
+  jadi 37 skill, kategori baru "Forensics & lifecycle", quick-lookup
+  table tambah 10 entry. Cross-reference ke dokumen baru di
+  `docs/architecture/`, `docs/observability/`, `docs/release/`,
+  `docs/api/`, `docs/data/`, `docs/marketplace/`, `docs/billing/`,
+  `docs/onboarding/`, `docs/legal/`.
+- **README.md root** diperbarui: tabel "Where everything lives"
+  ditambah entry untuk semua doc folder baru; total skill count
+  31 → 37; CODE_OF_CONDUCT.md + SUPPORT.md ditautkan.
+- **Hasil bersih**: AI coding agent + human contributor sekarang
+  punya entry-point doc untuk *setiap* topik yg disebut di plan,
+  bukan placeholder TODO. PR review, eval, triage, audit, off-
+  boarding, postmortem semua punya checklist eksplisit. Footprint
+  Phase 0 W1 tidak berubah (skill yang relevan: bootstrap-monorepo,
+  add-package, add-table, write-adr, write-rfc).
+
+---
 
 ### v2.4 (Final — Skills Library Round 2 + Supporting Docs)
 

@@ -1,0 +1,141 @@
+name: Bug report
+description: A defect in the codebase, build, or developer experience.
+title: "[bug] "
+labels: ["type:bug", "triage:needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug.
+
+        > **Customer / billing / data issue?** Don't file here.
+        > Open a ticket from the app or email billing@teskel.app.
+        >
+        > **Security vulnerability?** Don't file here.
+        > See [SECURITY.md](../../SECURITY.md).
+        >
+        > **Question or "is this expected?"** Use
+        > [Discussions](https://github.com/yahyaxbt/teskel/discussions) instead.
+
+        Please fill in every section. The clearer the report, the
+        faster we can fix it.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One sentence — what's broken?
+      placeholder: "Workflow run hangs at step 3 when the LLM node fallback chain triggers."
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Numbered steps. Include URLs, IDs, request/response if relevant.
+        Redact any PII.
+      placeholder: |
+        1. Open `apps/web` at `/workflows/<id>`.
+        2. Click "Run".
+        3. Observe step 3 is stuck in `running` state for >5 min.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: "Step 3 should fail-over to fallback model within 30 s."
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: "Step 3 stays in `running` indefinitely; no error logged."
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity (your assessment)
+      description: |
+        Triage may adjust this. See [`docs/observability/slo-sli.md`](../../docs/observability/slo-sli.md)
+        for severity rubric.
+      options:
+        - "Sev3 — minor / cosmetic / dev-only"
+        - "Sev2 — partial impact, workaround exists"
+        - "Sev1 — major impact, no workaround"
+        - "Don't know"
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface affected
+      multiple: true
+      options:
+        - "Web app (apps/web)"
+        - "Public API (apps/api)"
+        - "Workers / queue"
+        - "AI gateway / prompts"
+        - "Sandbox / E2B"
+        - "Marketplace"
+        - "Identity / auth / RBAC"
+        - "Object storage (R2)"
+        - "Outbound integration (Stripe, Resend, …)"
+        - "Inbound webhook"
+        - "CLI / SDK"
+        - "Docs / build / dev experience"
+        - "Other"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: "local / preview / staging / canary / prod"
+      placeholder: "staging"
+    validations:
+      required: true
+  - type: input
+    id: tenant
+    attributes:
+      label: Tenant ID (if applicable)
+      description: "UUID of the affected workspace. Don't paste names / emails."
+      placeholder: "01J9X3..."
+  - type: input
+    id: request_id
+    attributes:
+      label: Request ID / run ID / trace ID
+      description: "From the response header or the dashboard. Helps locate logs."
+      placeholder: "req_01J9X3..."
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / errors
+      description: |
+        Paste relevant log lines, exception messages, screenshots.
+        REDACT PII (emails, phones, names, raw bodies).
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit / release tag
+      placeholder: "v0.4.2 / commit abc123"
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround (if any)
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirm
+      options:
+        - label: "I have searched existing issues and Discussions and not found this."
+          required: true
+        - label: "I have redacted PII (emails, phones, raw bodies, customer names) from this report."
+          required: true
+        - label: "If this is a customer-impacting incident, I am also paging on-call (not relying on this issue)."
+          required: false

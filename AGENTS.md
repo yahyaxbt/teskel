@@ -735,6 +735,25 @@ the PR description.
 
 - [`add-e2e-test`](./.agents/skills/add-e2e-test/SKILL.md) —
   Playwright test for a golden user flow.
+- [`run-eval`](./.agents/skills/run-eval/SKILL.md) — author and run a
+  Promptfoo eval suite for a prompt slot; gate releases on
+  pass-rate; investigate eval drift.
+- [`review-pr`](./.agents/skills/review-pr/SKILL.md) — review a PR
+  against the TESKEL hard-rules + security + perf + DoD
+  checklist. For human reviewers AND AI reviewers.
+- [`triage-bug`](./.agents/skills/triage-bug/SKILL.md) — assign
+  severity, reproduce, classify, and route a bug ticket. Output
+  is the actionable ticket, not the fix.
+
+### Forensics & lifecycle
+
+- [`audit-log-query`](./.agents/skills/audit-log-query/SKILL.md) —
+  query the hash-chained audit log; verify the chain; produce
+  forensic reports for incidents, DSARs, and compliance audits.
+- [`tenant-offboarding`](./.agents/skills/tenant-offboarding/SKILL.md)
+  — pause, archive, export, and erase a workspace's data per
+  retention policy. Two-handed; required for cancellation,
+  DSAR erasure, and enforced takedown paths.
 
 ### Process
 
@@ -742,6 +761,9 @@ the PR description.
   Architecture Decision Record (immutable, supersede-only).
 - [`write-rfc`](./.agents/skills/write-rfc/SKILL.md) — author a
   Request for Comments (exploratory; converges on an ADR).
+- [`write-postmortem`](./.agents/skills/write-postmortem/SKILL.md)
+  — author a blameless postmortem after a Sev1/Sev2; capture
+  timeline, contributing factors, owned/dated action items.
 - [`kickoff-phase`](./.agents/skills/kickoff-phase/SKILL.md) — formal
   procedure to start a new build phase.
 
@@ -776,8 +798,14 @@ the PR description.
 | Process a GDPR / privacy request | [`gdpr-data-request`](./.agents/skills/gdpr-data-request/SKILL.md) |
 | Publish / accept a marketplace template | [`publish-template`](./.agents/skills/publish-template/SKILL.md) |
 | Add a Playwright E2E flow | [`add-e2e-test`](./.agents/skills/add-e2e-test/SKILL.md) |
+| Author / run an LLM eval suite | [`run-eval`](./.agents/skills/run-eval/SKILL.md) |
+| Review someone's PR (or self-review) | [`review-pr`](./.agents/skills/review-pr/SKILL.md) |
+| Triage an incoming bug ticket | [`triage-bug`](./.agents/skills/triage-bug/SKILL.md) |
+| Investigate "who did what when" | [`audit-log-query`](./.agents/skills/audit-log-query/SKILL.md) |
+| Cancel / delete / DSAR-erase a tenant | [`tenant-offboarding`](./.agents/skills/tenant-offboarding/SKILL.md) |
 | Settle an architecture decision | [`write-adr`](./.agents/skills/write-adr/SKILL.md) |
 | Propose a non-trivial design before coding | [`write-rfc`](./.agents/skills/write-rfc/SKILL.md) |
+| Author a blameless postmortem | [`write-postmortem`](./.agents/skills/write-postmortem/SKILL.md) |
 | Start a new phase | [`kickoff-phase`](./.agents/skills/kickoff-phase/SKILL.md) |
 
 For **Devin**: invoke via the `skill` tool. For other agents: read the
@@ -835,13 +863,21 @@ Always link the corresponding plan section / ADR when adding or
 changing a rule.
 
 ```text
-Version: 1.1.0
+Version: 1.2.0
 Last reviewed: 2026-05-08
 Owners: see CODEOWNERS (root)
 ```
 
 ### Changelog
 
+- **1.2.0** — Skills library expanded from 31 → 37 (added run-eval,
+  review-pr, triage-bug, audit-log-query, tenant-offboarding,
+  write-postmortem). New "Forensics & lifecycle" category. Quick-
+  lookup table extended (10 new entries). Cross-references added
+  to new docs (`docs/architecture/`, `docs/observability/`,
+  `docs/release/`, `docs/api/`, `docs/data/`, `docs/marketplace/`,
+  `docs/billing/`, `docs/onboarding/`, `docs/legal/`,
+  `docs/postmortems/`). Plan §Changelog v2.5.
 - **1.1.0** — Skills library expanded from 19 → 31 (added bootstrap-
   monorepo, add-integration, add-webhook-receiver, add-cron-job,
   add-email-template, write-adr, write-rfc, release-hotfix,
