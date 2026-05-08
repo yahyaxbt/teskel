@@ -5041,7 +5041,73 @@ Daftar keputusan paling sering ditanya, supaya tim baru tidak debat:
 
 ---
 
-## Changelog v1 → v2 → v2.1 → v2.2 (FINAL)
+## Changelog v1 → v2 → v2.1 → v2.2 → v2.3 (FINAL)
+
+### v2.3 (Final — Skills Library Expansion)
+
+> Status: **FINAL**. Plan ini tetap *executable single source of
+> truth*. Perubahan terhadap keputusan plan tetap wajib lewat jalur
+> ADR/RFC (Sec. 71 + Appendix G).
+
+- **Skills library di [`.agents/skills/`](./.agents/skills/) diperluas
+  dari 5 → 19** untuk menutup operasi berulang lintas seluruh fase
+  build:
+  - **UI / UX**:
+    [`add-ui-component`](./.agents/skills/add-ui-component/SKILL.md)
+    (shadcn/ui-style component, design tokens, variants, states, a11y,
+    Storybook, tests),
+    [`add-page`](./.agents/skills/add-page/SKILL.md) (Next.js 15 App
+    Router page, RSC default, RLS, four state files, Playwright smoke,
+    perf budget),
+    [`add-block`](./.agents/skills/add-block/SKILL.md) (Puck visual
+    builder block, schema + render + palette + migrator + tests),
+    [`design-review`](./.agents/skills/design-review/SKILL.md)
+    (checklist 13 sumbu yang wajib dijalankan sebelum PR UI dibuka).
+  - **Backend & API**:
+    [`add-api-route`](./.agents/skills/add-api-route/SKILL.md) (Hono +
+    Zod + auth + RBAC + idempotency + RLS + OpenAPI + SDK regen +
+    integrationtest + observability).
+  - **AI / LLM**:
+    [`add-prompt-slot`](./.agents/skills/add-prompt-slot/SKILL.md)
+    (versioned slot di registry, schema input/output, model
+    routing/fallback, budget, Promptfoo eval ≥10 case, Langfuse trace,
+    versioning rules).
+  - **Operations & release**:
+    [`add-feature-flag`](./.agents/skills/add-feature-flag/SKILL.md)
+    (PostHog flag bertyped wrapper, rollout plan + kill criteria +
+    removal SLA),
+    [`add-runbook`](./.agents/skills/add-runbook/SKILL.md) (template
+    runbook untuk setiap alert).
+  - **Security & access**:
+    [`add-rbac-role`](./.agents/skills/add-rbac-role/SKILL.md)
+    (permission registry → role map → Better Auth → RLS → middleware
+    → UI gate → audit log),
+    [`rotate-secret`](./.agents/skills/rotate-secret/SKILL.md) (zero-
+    downtime rotation 15 langkah dengan dual-window per tipe secret).
+  - **Marketplace**:
+    [`publish-template`](./.agents/skills/publish-template/SKILL.md)
+    (manifest, license, pricing, demo URL, moderation, post-publish
+    monitoring, versioning, takedown).
+  - **Quality**:
+    [`add-e2e-test`](./.agents/skills/add-e2e-test/SKILL.md)
+    (Playwright fixtures, tenant isolation, network policy, a11y
+    assertion, sharding, flake budget).
+  - **Data**:
+    [`data-backfill-job`](./.agents/skills/data-backfill-job/SKILL.md)
+    (BullMQ-driven, batched, idempotent, throttled, RLS-aware,
+    resumable backfill).
+  - **Process**:
+    [`kickoff-phase`](./.agents/skills/kickoff-phase/SKILL.md)
+    (formal kickoff: update `current-phase.md`, brief, derive stories,
+    register exit criteria, set up tracking, announce).
+- **Update [`AGENTS.md` §19 (Skills Library)](./AGENTS.md#19-skills-library)**
+  jadi indeks lengkap berbasis kategori plus tabel cepat
+  "I'm about to..." → skill sehingga agent langsung tahu skill mana
+  yang harus dijalankan.
+- **Update [`README.md`](./README.md)** untuk menyebutkan ekspansi
+  skills + link ke indeks.
+- Tidak ada perubahan keputusan plan; semua skill mencerminkan
+  konvensi yang sudah ada di plan dan di AGENTS.md.
 
 ### v2.2 (Final — AI Agent Operating Manual + Repo Scaffolding)
 
