@@ -4,7 +4,7 @@ contact_links:
     url: https://github.com/yahyaxbt/teskel/security/advisories/new
     about: |
       Do NOT open a public issue. Report privately via GitHub Security
-      Advisories or email security@teskel.app. See SECURITY.md.
+      Advisories or email security@teskel.dev. See SECURITY.md.
   - name: Customer support / billing
     url: https://app.teskel.app
     about: |

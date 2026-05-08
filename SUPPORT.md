@@ -12,7 +12,7 @@ TESKEL. Pick the bucket that matches your situation.
 | Product help, "how do I…?" | https://docs.teskel.app (when live) |
 | Bug report (your account / data not behaving as expected) | https://app.teskel.app → "Help" → "Report a bug" |
 | Billing question (invoice, refund, payment failed) | billing@teskel.app |
-| Security concern (suspected vulnerability, account compromise) | security@teskel.app — see [SECURITY.md](./SECURITY.md) |
+| Security concern (suspected vulnerability, account compromise) | security@teskel.dev — see [SECURITY.md](./SECURITY.md) |
 | Marketplace dispute (template doesn't work, refund) | marketplace-support@teskel.app |
 | Privacy / GDPR data request (DSAR) | privacy@teskel.app — see [docs/legal/README.md](./docs/legal/README.md) |
 | Press / media | press@teskel.app |

@@ -67,7 +67,7 @@ to this file plus a story in the affected phase.
 | C | App logs (Loki) | **30 d** | Loki retention policy. | No PII allowed in logs. |
 | C | Traces (OpenTelemetry / Sentry) | **30 d**; perf samples 7 d | Auto-purge. | |
 | C | Metrics (Grafana) | **400 d** at full resolution; downsample after | Native retention. | For YoY comparison. |
-| C | Audit log (`audit_log`) | **3 y** by default; **7 y** on Business+ | Hard delete only by retention job. | Hash-chained; cannot be edited. |
+| C | Audit log (`audit_log`) | **Plan-tiered**: 7 d / 30 d / 90 d / 1 y / 7 y for Free / Starter / Pro / Business / Enterprise (see [`docs/billing/plans.md`](../billing/plans.md)). | Hard delete only by retention job. | Hash-chained; cannot be edited. Compliance floors override (see §4 EU + §6 legal hold). |
 | C | RLS sanity events | **90 d** | Auto-purge. | Should be 0 in prod. |
 | D | Invoices, payments | **7 y** (regulatory) | Never deleted while in retention window; archived to R2 cold after 1 y. | Indonesian + EU + US tax minima. |
 | D | Stripe payouts mirror | **7 y** | Same as invoices. | |

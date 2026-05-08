@@ -177,8 +177,15 @@ A starter PR should:
 
 ### 2. Branch + skill
 
+Use one of the canonical branch-name formats from
+[`CONTRIBUTING.md`](../../CONTRIBUTING.md):
+
 ```bash
-git checkout -b user/<initial>-<slug>
+# Humans:
+git checkout -b <author>/<short-slug>           # e.g. yahya/add-package-utils
+
+# AI agents (Devin, Cursor, Claude):
+git checkout -b devin/<unix-timestamp>-<slug>   # e.g. devin/1778231343-docs-round-3
 ```
 
 Open the matching skill's `SKILL.md` and follow it **step-by-step**.

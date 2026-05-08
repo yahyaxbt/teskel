@@ -10,7 +10,7 @@ description: Query the hash-chained audit log to answer who-did-what-when, valid
 > **Related skills:** `tenant-offboarding`, `gdpr-data-request`,
 > `incident-sev1`, `incident-sev2`, `triage-bug`,
 > `write-postmortem`.
-> **Hard rules:** [`AGENTS.md` §9](../../AGENTS.md#9-security--data-rules);
+> **Hard rules:** [`AGENTS.md` §9](../../../AGENTS.md#9-security--data-rules);
 > [`docs/data/retention.md`](../../../docs/data/retention.md) Class C.
 
 The audit log is the **append-only, hash-chained ledger** of every
@@ -404,7 +404,7 @@ After the ticket closes:
 
 ## References
 
-- [`AGENTS.md` §9](../../AGENTS.md#9-security--data-rules).
+- [`AGENTS.md` §9](../../../AGENTS.md#9-security--data-rules).
 - [`docs/data/retention.md`](../../../docs/data/retention.md) Class C.
 - [`docs/architecture/multi-tenancy.md`](../../../docs/architecture/multi-tenancy.md)
   §8 (cross-tenant operations).

@@ -293,7 +293,7 @@ When the fix lands:
 
 ## References
 
-- [`AGENTS.md` §11](../../AGENTS.md#11-incident--escalation-rules).
+- [`AGENTS.md` §17](../../../AGENTS.md#17-escalation-triggers).
 - [`docs/observability/slo-sli.md`](../../../docs/observability/slo-sli.md).
 - [`docs/observability/dashboards.md`](../../../docs/observability/dashboards.md).
 - `incident-sev1`, `incident-sev2`, `write-postmortem`,

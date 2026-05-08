@@ -8,7 +8,7 @@ description: Author a blameless postmortem after a Sev1 / Sev2 incident — capt
 > **Plan refs:** §41 (on-call & runbooks), §44 (continuous improvement).
 > **Related skills:** `incident-sev1`, `incident-sev2`,
 > `gameday-drill`, `add-runbook`, `release-hotfix`.
-> **Hard rules:** [`AGENTS.md` §11](../../AGENTS.md#11-incident--escalation-rules).
+> **Hard rules:** [`AGENTS.md` §17](../../../AGENTS.md#17-escalation-triggers).
 
 A postmortem is the **artifact** that converts an incident into a
 durable improvement to the platform. It is **blameless** —
@@ -56,9 +56,10 @@ Create `docs/postmortems/<YYYY-MM-DD>-<slug>.md` from the template
 (see §3 below). Slug is one short phrase, kebab-case
 (`stripe-webhook-replay`, `pgvector-index-rebuild-stall`).
 
-If the directory doesn't exist yet, the first postmortem creates
-it; add a `README.md` index (one line per postmortem) at the same
-time.
+The `docs/postmortems/` directory and its `README.md` index are
+**pre-created** in the repo (see [`docs/postmortems/README.md`](../../../docs/postmortems/README.md)).
+After landing the postmortem PR, add a one-line entry to that
+index — newest first — pointing to the new doc.
 
 ### 2. Reconstruct the timeline
 
@@ -318,7 +319,7 @@ the impact was.
 
 ## References
 
-- [`AGENTS.md` §11](../../AGENTS.md#11-incident--escalation-rules).
+- [`AGENTS.md` §17](../../../AGENTS.md#17-escalation-triggers).
 - [`docs/observability/slo-sli.md`](../../docs/observability/slo-sli.md).
 - `incident-sev1`, `incident-sev2`, `gameday-drill` skills.
 - Plan §41, §44.

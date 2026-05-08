@@ -10,7 +10,7 @@ description: Offboard a tenant — pause, archive, export, and (eventually) eras
 > **Related skills:** `gdpr-data-request`, `db-restore-pitr`,
 > `data-backfill-job`, `audit-log-query`, `rotate-secret`.
 > **Hard rules:** [`docs/data/retention.md`](../../../docs/data/retention.md);
-> [`AGENTS.md` §9](../../AGENTS.md#9-security--data-rules).
+> [`AGENTS.md` §9](../../../AGENTS.md#9-security--data-rules).
 
 Offboarding a tenant is the **inverse** of onboarding. It is one
 of the highest-risk operations the platform performs because:

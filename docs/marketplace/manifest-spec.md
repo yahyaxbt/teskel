@@ -19,7 +19,7 @@ pipeline use.
 
 ## 1. File layout
 
-```
+```text
 my-template/
 ├── teskel.template.yaml        # the manifest, authoritative
 ├── README.md                   # rendered on listing page

@@ -8,8 +8,8 @@ description: Review a pull request as a senior engineer or AI reviewer — appli
 > **Plan refs:** §69 (DoR/DoD), §70 (PR workflow), §97
 > (pitfalls per phase).
 > **Related skills:** every skill that opens a PR (i.e. all of them).
-> **Hard rules:** [`AGENTS.md` §8](../../AGENTS.md#8-architecture-hard-rules),
-> [`AGENTS.md` §13](../../AGENTS.md#13-pr-workflow).
+> **Hard rules:** [`AGENTS.md` §8](../../../AGENTS.md#8-architecture-hard-constraints),
+> [`AGENTS.md` §13](../../../AGENTS.md#13-pr-workflow-branch-commit-review).
 
 A PR review at TESKEL is a **two-axis** check:
 
@@ -253,7 +253,7 @@ Treat your own PR like someone else's. The day before opening it:
 
 ## References
 
-- [`AGENTS.md` §8, §13, §16](../../AGENTS.md).
+- [`AGENTS.md` §8, §13, §16](../../../AGENTS.md).
 - [`.github/pull_request_template.md`](../../../.github/pull_request_template.md).
 - [`docs/architecture/threat-model.md`](../../../docs/architecture/threat-model.md).
 - [`docs/api/conventions.md`](../../../docs/api/conventions.md),

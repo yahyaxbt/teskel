@@ -4,7 +4,7 @@
 > adds or changes a public API route.
 >
 > **Governed by:** Plan §22 (API), §50 (data protection),
-> [`AGENTS.md` §8](../../AGENTS.md#8-architecture-hard-rules).
+> [`AGENTS.md` §8](../../AGENTS.md#8-architecture-hard-constraints).
 > Operationalized by `add-api-route` skill.
 
 This document defines the conventions every public API route MUST
@@ -15,7 +15,7 @@ align where it doesn't cost anything.
 
 ## 1. URL shape
 
-```
+```text
 https://api.teskel.app/{version}/{resource}[/{id}[/{sub-resource}[/{sub-id}]]]
 ```
 
@@ -184,7 +184,7 @@ under concurrent writes and is O(N) on large tables.
 
 Request:
 
-```
+```text
 GET /v1/workflows?page[size]=50&page[after]=eyJpZCI6...
 ```
 
@@ -213,7 +213,7 @@ Response:
 
 ## 6. Filtering, sorting, sparse fieldsets
 
-```
+```text
 GET /v1/workflows?filter[status]=active&filter[ownerId]=...&sort=-updatedAt&fields=id,name,status
 ```
 
@@ -363,7 +363,7 @@ Idempotency-Key: 01J9...
 ```http
 HTTP/1.1 201 Created
 Location: /v1/workflows/01J9X...
-Content-Type: application/problem+json; charset=utf-8
+Content-Type: application/json; charset=utf-8
 
 {
   "data": {

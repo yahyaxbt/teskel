@@ -9,7 +9,7 @@ description: Run an LLM evaluation suite (Promptfoo) against a prompt slot — s
 > §52 (AI guardrails).
 > **Related skills:** `add-prompt-slot`, `add-workflow-node`,
 > `release-canary`, `triage-bug`.
-> **Hard rules:** [`AGENTS.md` §10](../../AGENTS.md#10-aillm-rules).
+> **Hard rules:** [`AGENTS.md` §10](../../../AGENTS.md#10-ai--llm-rules).
 
 A **prompt slot** is the canonical, versioned location where a
 particular LLM call lives. Every slot has an **eval set** — a
